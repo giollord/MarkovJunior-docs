@@ -20,7 +20,7 @@ static class Graphics
     /// <returns>A tuple of (bitmap, width, height, 1), or <c>(null, -1, -1, -1)</c> if the loading fails.</returns>
     public static (int[], int, int, int) LoadBitmap(Texture2D tex)
     {
-        var pixels = tex.GetPixels32();
+        //var pixels = tex.GetPixels32();
         //var res = new int[pixels.Length];
         //var w = tex.width;
         //var h = tex.height;
