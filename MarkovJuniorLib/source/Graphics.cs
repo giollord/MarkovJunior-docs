@@ -20,12 +20,18 @@ static class Graphics
     /// <returns>A tuple of (bitmap, width, height, 1), or <c>(null, -1, -1, -1)</c> if the loading fails.</returns>
     public static (int[], int, int, int) LoadBitmap(Texture2D tex)
     {
-        try
-        {
-            var res = tex.GetPixels32().Select(x => (x.a << 24) + (x.r << 16) + (x.g << 8) + (x.b)).ToArray();
-            return (res, tex.width, tex.height, 1);
-        }
-        catch (Exception) { return (null, -1, -1, -1); }
+        var pixels = tex.GetPixels32();
+        //var res = new int[pixels.Length];
+        //var w = tex.width;
+        //var h = tex.height;
+        //for(var i = 0; i < pixels.Length; i++)
+        //{
+        //    var x = pixels[i];
+        //    res[(h - i / w - 1) * w + i % w] = (x.a << 24) + (x.r << 16) + (x.g << 8) + (x.b);
+        //}
+        var res = tex.GetPixels32().Select(x => (x.a << 24) + (x.r << 16) + (x.g << 8) + (x.b)).ToArray();
+        Array.Reverse(res);
+        return (res, tex.width, tex.height, 1);
     }
 
     public static (int[], int, int, int) LoadBitmap(byte[] bytes)
@@ -51,7 +57,10 @@ static class Graphics
         //result.Save(filename);
 
         var tex = new Texture2D(width, height);
-        tex.SetPixels32(data.Select(x => new Color32(GetColorComp(x, 2), GetColorComp(x, 1), GetColorComp(x, 0), GetColorComp(x, 3))).ToArray());
+        var colors = data.Select(x => new Color32(GetColorComp(x, 2), GetColorComp(x, 1), GetColorComp(x, 0), GetColorComp(x, 3))).ToArray();
+        Array.Reverse(colors);
+        tex.SetPixels32(colors);
+        tex.Apply(false);
         return tex;
     }
 

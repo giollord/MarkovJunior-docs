@@ -39,7 +39,8 @@ namespace MarkovJuniorLib
                     {
                         var (bitmap, WIDTH, HEIGHT) = Graphics.Render(result, FX, FY, FZ, colors, modelConfig.PixelSize, modelConfig.Gui);
                         if (modelConfig.Gui > 0) GUI.Draw(modelConfig.Name, interpreter.root, interpreter.current, bitmap, WIDTH, HEIGHT, customPalette);
-                        Graphics.SaveBitmap(bitmap, WIDTH, HEIGHT, outputname + ".png");
+                        var tex = Graphics.SaveBitmap(bitmap, WIDTH, HEIGHT, outputname + ".png");
+                        results.Add(new RunResult { Texture = tex });
                     }
                     else
                     {

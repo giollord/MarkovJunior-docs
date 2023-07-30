@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using System.IO;
 
 /// <summary>
 /// Draws a visual representation of the state of the interpreter, alongside
@@ -41,7 +42,8 @@ static class GUI
         b1 = bitmap[width - 1];
         fonts[1] = (bitmap.Select(argb => argb != b0 && argb != b1).ToArray(), width / 32, height / 3);
 
-        XElement settings = XDocument.Load("resources/settings.xml").Root;
+        using var textReader = new StringReader(MarkovJuniorLib.Properties.Resources.settings);
+        XElement settings = XDocument.Load(textReader).Root;
         S = settings.Get("squareSize", 7);
         SMALL = settings.Get("smallSquareSize", 3);
         MAXWIDTH = settings.Get("maxwidth", 10);
