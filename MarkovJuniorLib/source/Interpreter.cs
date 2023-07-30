@@ -108,11 +108,18 @@ class Interpreter
     /// <param name="steps">The maximum number of steps to execute. If 0 or negative, there is no maximum and the program is run until it terminates.</param>
     /// <param name="gif">If <c>true</c>, every intermediate grid state is yielded; otherwise, only the final grid state is yielded.</param>
     /// <returns>An enumerable of (state, alphabet, MX, MY, MZ) tuples.</returns>
-    public IEnumerable<(byte[], char[], int, int, int)> Run(int seed, int steps, bool gif)
+    public IEnumerable<(byte[], char[], int, int, int)> Run(int seed, int steps, bool gif, byte[]? initialState)
     {
         random = new Random(seed);
         grid = startgrid;
-        grid.Clear();
+        if (initialState == null)
+        {
+            grid.Clear();
+        }
+        else
+        {
+            Array.Copy(initialState, grid.state, initialState.Length);
+        }
         if (origin) grid.state[grid.MX / 2 + (grid.MY / 2) * grid.MX + (grid.MZ / 2) * grid.MX * grid.MY] = 1;
 
         changes.Clear();

@@ -20,6 +20,7 @@ namespace MarkovJuniorLib.CustomCode
         public int Gui { get; set; } = 0;
         public ModelColor[] Colors { get; set; } = new ModelColor[0];
         public string ModelXML { get; set; } = null;
+        public Texture2D InitialTexture { get; set; } = null;
         public Dictionary<string, Texture2D> Samples { get; set; } = new();
         public Dictionary<string, string> TilesetXmls { get; set; } = new();
         public Dictionary<string, byte[]> Resources { get; set; } = new();
