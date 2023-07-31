@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Security.Cryptography;
 
 /// <summary>
 /// Helper functions for loading, rendering and saving images.
@@ -20,18 +21,17 @@ static class Graphics
     /// <returns>A tuple of (bitmap, width, height, 1), or <c>(null, -1, -1, -1)</c> if the loading fails.</returns>
     public static (int[], int, int, int) LoadBitmap(Texture2D tex)
     {
-        //var pixels = tex.GetPixels32();
-        //var res = new int[pixels.Length];
-        //var w = tex.width;
-        //var h = tex.height;
-        //for(var i = 0; i < pixels.Length; i++)
-        //{
-        //    var x = pixels[i];
-        //    res[(h - i / w - 1) * w + i % w] = (x.a << 24) + (x.r << 16) + (x.g << 8) + (x.b);
-        //}
+        var pixels = tex.GetPixels32();
         var res = tex.GetPixels32().Select(x => (x.a << 24) + (x.r << 16) + (x.g << 8) + (x.b)).ToArray();
-        Array.Reverse(res);
-        return (res, tex.width, tex.height, 1);
+        var w = tex.width;
+        var h = tex.height;
+        for (var i = 0; i < res.Length; i++)
+        {
+            var pxI = (h - i / w - 1) * w + i % w;
+            var x = pixels[pxI];
+            res[i] = (x.a << 24) + (x.r << 16) + (x.g << 8) + (x.b);
+        }
+        return (res, w, h, 1);
     }
 
     public static (int[], int, int, int) LoadBitmap(byte[] bytes)
@@ -50,15 +50,14 @@ static class Graphics
     {
         static byte GetColorComp(int val, int comp) => (byte)((val >> (comp * 8)) & 255);
 
-        //Bitmap result = new(width, height);
-        //var bits = result.LockBits(new Rectangle(0, 0, result.Width, result.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-        //System.Runtime.InteropServices.Marshal.Copy(data, 0, bits.Scan0, data.Length);
-        //result.UnlockBits(bits);
-        //result.Save(filename);
-
         var tex = new Texture2D(width, height);
-        var colors = data.Select(x => new Color32(GetColorComp(x, 2), GetColorComp(x, 1), GetColorComp(x, 0), GetColorComp(x, 3))).ToArray();
-        Array.Reverse(colors);
+        var colors = new Color32[data.Length];
+        for (var i = 0; i < data.Length; i++)
+        {
+            var pxI = (height - i / width - 1) * width + i % width;
+            var x = data[i];
+            colors[pxI] = new Color32(GetColorComp(x, 2), GetColorComp(x, 1), GetColorComp(x, 0), GetColorComp(x, 3));
+        }
         tex.SetPixels32(colors);
         tex.Apply(false);
         return tex;
