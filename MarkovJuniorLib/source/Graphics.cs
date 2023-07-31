@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using System.Security.Cryptography;
 
 /// <summary>
 /// Helper functions for loading, rendering and saving images.
