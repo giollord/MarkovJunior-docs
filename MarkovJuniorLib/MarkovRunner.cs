@@ -1,8 +1,12 @@
-﻿using System;
+﻿using MarkovJuniorLib.Internal;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
 using UnityEngine;
+
+using Graphics = MarkovJuniorLib.Internal.Graphics;
+using GUI = MarkovJuniorLib.Internal.GUI;
 
 namespace MarkovJuniorLib
 {

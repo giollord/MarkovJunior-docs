@@ -1,12 +1,16 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Runtime.CompilerServices;
+using UnityEngine;
 
-namespace System.Collections.Generic
+using Debug = UnityEngine.Debug;
+
+namespace MarkovJuniorLib.Internal
 {
     /// <summary>
     ///  Represents a min priority queue.
@@ -59,7 +63,7 @@ namespace System.Collections.Generic
 #if DEBUG
         static PriorityQueue()
         {
-            Debug.Assert(Log2Arity > 0 && Math.Pow(2, Log2Arity) == Arity);
+            Debug.Assert(Log2Arity > 0 && Mathf.Pow(2, Log2Arity) == Arity);
         }
 #endif
 
@@ -551,7 +555,7 @@ namespace System.Collections.Generic
         /// </remarks>
         public void TrimExcess()
         {
-            int threshold = (int)(_nodes.Length * 0.9);
+            int threshold = (int)(_nodes.Length * 0.9f);
             if (_size < threshold)
             {
                 Array.Resize(ref _nodes, _size);
@@ -576,7 +580,7 @@ namespace System.Collections.Generic
             if ((uint)newcapacity > int.MaxValue) newcapacity = int.MaxValue;
 
             // Ensure minimum growth is respected.
-            newcapacity = Math.Max(newcapacity, _nodes.Length + MinimumGrow);
+            newcapacity = Mathf.Max(newcapacity, _nodes.Length + MinimumGrow);
 
             // If the computed capacity is still less than specified, set to the original argument.
             // Capacities exceeding Array.MaxLength will be surfaced as OutOfMemoryException by Array.Resize.
@@ -735,7 +739,7 @@ namespace System.Collections.Generic
                 (TElement Element, TPriority Priority) minChild = nodes[i];
                 int minChildIndex = i;
 
-                int childIndexUpperBound = Math.Min(i + Arity, size);
+                int childIndexUpperBound = Mathf.Min(i + Arity, size);
                 while (++i < childIndexUpperBound)
                 {
                     (TElement Element, TPriority Priority) nextChild = nodes[i];
@@ -784,7 +788,7 @@ namespace System.Collections.Generic
                 (TElement Element, TPriority Priority) minChild = nodes[i];
                 int minChildIndex = i;
 
-                int childIndexUpperBound = Math.Min(i + Arity, size);
+                int childIndexUpperBound = Mathf.Min(i + Arity, size);
                 while (++i < childIndexUpperBound)
                 {
                     (TElement Element, TPriority Priority) nextChild = nodes[i];
