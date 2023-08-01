@@ -64,7 +64,7 @@ class MapNode : Branch
         // parses a fraction from a string
         static (int numerator, int denominator) readScale(string s)
         {
-            if (!s.Contains('/')) return (int.Parse(s), 1);
+            if (!s.Contains("/")) return (int.Parse(s), 1);
             else
             {
                 string[] nd = s.Split('/');

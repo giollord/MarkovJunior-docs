@@ -212,7 +212,7 @@ class ConvolutionNode : Node
             {
                 if (s.Contains('.'))
                 {
-                    string[] bounds = s.Split("..");
+                    string[] bounds = s.Split(new[] { ".." }, System.StringSplitOptions.None);
                     int min = int.Parse(bounds[0]);
                     int max = int.Parse(bounds[1]);
                     int[] result = new int[max - min + 1];

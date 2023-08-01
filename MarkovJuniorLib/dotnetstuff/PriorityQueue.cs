@@ -310,7 +310,7 @@ namespace System.Collections.Generic
         ///  <see langword="true"/> if the element is successfully removed;
         ///  <see langword="false"/> if the <see cref="PriorityQueue{TElement, TPriority}"/> is empty.
         /// </returns>
-        public bool TryDequeue([MaybeNullWhen(false)] out TElement element, [MaybeNullWhen(false)] out TPriority priority)
+        public bool TryDequeue(out TElement element, out TPriority priority)
         {
             if (_size != 0)
             {
@@ -336,7 +336,7 @@ namespace System.Collections.Generic
         ///  <see langword="true"/> if there is a minimal element;
         ///  <see langword="false"/> if the <see cref="PriorityQueue{TElement, TPriority}"/> is empty.
         /// </returns>
-        public bool TryPeek([MaybeNullWhen(false)] out TElement element, [MaybeNullWhen(false)] out TPriority priority)
+        public bool TryPeek(out TElement element, out TPriority priority)
         {
             if (_size != 0)
             {
@@ -512,11 +512,8 @@ namespace System.Collections.Generic
         /// </summary>
         public void Clear()
         {
-            if (RuntimeHelpers.IsReferenceOrContainsReferences<(TElement, TPriority)>())
-            {
-                // Clear the elements so that the gc can reclaim the references
-                Array.Clear(_nodes, 0, _size);
-            }
+            // Clear the elements so that the gc can reclaim the references
+            Array.Clear(_nodes, 0, _size);
             _size = 0;
             _version++;
         }
@@ -609,10 +606,7 @@ namespace System.Collections.Generic
                 }
             }
 
-            if (RuntimeHelpers.IsReferenceOrContainsReferences<(TElement, TPriority)>())
-            {
-                _nodes[lastNodeIndex] = default;
-            }
+            _nodes[lastNodeIndex] = default;
         }
 
         /// <summary>

@@ -9,6 +9,26 @@ namespace MarkovJuniorLib
 {
     public static class Runner
     {
+        public static Dictionary<char, Color32> GetMainPallette()
+        {
+            return GetPallette().Where(x => char.IsUpper(x.Key)).ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        public static Dictionary<char, Color32> GetPallette()
+        {
+            static byte GetColorComp(int val, int comp) => (byte)((val >> (comp * 8)) & 255);
+
+            using var palletteTextReader = new System.IO.StringReader(Properties.Resources.palette);
+            Dictionary<char, Color32> pallette = XDocument.Load(palletteTextReader).Root.Elements("color").ToDictionary(
+                x => x.Get<char>("symbol"),
+                x =>
+                {
+                    var i = (255 << 24) + Convert.ToInt32(x.Get<string>("value"), 16);
+                    return new Color32(GetColorComp(i, 2), GetColorComp(i, 1), GetColorComp(i, 0), GetColorComp(i, 3));
+                });
+            return pallette;
+        }
+
         public static IEnumerable<RunResult> Run(ModelConfig modelConfig)
         {
             //Resources.palette
