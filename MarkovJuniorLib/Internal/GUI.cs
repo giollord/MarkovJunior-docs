@@ -34,17 +34,17 @@ namespace MarkovJuniorLib.Internal
             for (int i = 0; i < legend.Length; i++) map.Add(legend[i], (byte)i);
             fonts = new (bool[], int, int)[2];
 
-            (int[] bitmap, int width, int height, _) = Graphics.LoadBitmap(MarkovJuniorLib.Properties.Resources.Tamzen8x16r);
+            (int[] bitmap, int width, int height, _) = Graphics.LoadBitmap(Constants.Font_Tamzen8x16r_Bytes);
             int b0 = bitmap[0];
             int b1 = bitmap[width - 1];
             fonts[0] = (bitmap.Select(argb => argb != b0 && argb != b1).ToArray(), width / 32, height / 3);
 
-            (bitmap, width, height, _) = Graphics.LoadBitmap(MarkovJuniorLib.Properties.Resources.Tamzen8x16b);
+            (bitmap, width, height, _) = Graphics.LoadBitmap(Constants.Font_Tamzen8x16b_Bytes);
             b0 = bitmap[0];
             b1 = bitmap[width - 1];
             fonts[1] = (bitmap.Select(argb => argb != b0 && argb != b1).ToArray(), width / 32, height / 3);
 
-            using var textReader = new StringReader(MarkovJuniorLib.Properties.Resources.settings);
+            using var textReader = new StringReader(Constants.Settings_XML);
             XElement settings = XDocument.Load(textReader).Root;
             S = settings.Get("squareSize", 7);
             SMALL = settings.Get("smallSquareSize", 3);

@@ -21,7 +21,7 @@ namespace MarkovJuniorLib
         {
             static byte GetColorComp(int val, int comp) => (byte)((val >> (comp * 8)) & 255);
 
-            using var palletteTextReader = new System.IO.StringReader(Properties.Resources.palette);
+            using var palletteTextReader = new System.IO.StringReader(Constants.Pallette_XML);
             Dictionary<char, Color32> pallette = XDocument.Load(palletteTextReader).Root.Elements("color").ToDictionary(
                 x => x.Get<char>("symbol"),
                 x =>
@@ -35,7 +35,7 @@ namespace MarkovJuniorLib
         public static IEnumerable<RunResult> Run(ModelConfig modelConfig)
         {
             //Resources.palette
-            using var palletteTextReader = new System.IO.StringReader(Properties.Resources.palette);
+            using var palletteTextReader = new System.IO.StringReader(Constants.Pallette_XML);
             Dictionary<char, int> palette = XDocument.Load(palletteTextReader).Root.Elements("color").ToDictionary(x => x.Get<char>("symbol"), x => (255 << 24) + Convert.ToInt32(x.Get<string>("value"), 16));
 
             using var modelTextReader = new System.IO.StringReader(modelConfig.ModelXML);
