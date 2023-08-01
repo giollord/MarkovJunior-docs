@@ -1,6 +1,6 @@
 ﻿// Copyright (C) 2022 Maxim Gumin, The MIT License (MIT)
 
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
 using System;
 using System.Linq;
 using System.Xml.Linq;
@@ -51,7 +51,7 @@ abstract class Node
     {
         if (!nodenames.Contains(xelem.Name.LocalName))
         {
-            Interpreter.WriteLine($"unknown node type \"{xelem.Name}\" at line {xelem.LineNumber()}");
+            Interpreter.Error($"unknown node type \"{xelem.Name}\" at line {xelem.LineNumber()}");
             return null;
         }
 
@@ -105,7 +105,7 @@ abstract class Branch : Node
         bool[] symmetry = SymmetryHelper.GetSymmetry(ip.grid.MZ == 1, symmetryString, parentSymmetry);
         if (symmetry == null)
         {
-            Interpreter.WriteLine($"unknown symmetry {symmetryString} at line {xelem.LineNumber()}");
+            Interpreter.Error($"unknown symmetry {symmetryString} at line {xelem.LineNumber()}");
             return false;
         }
 

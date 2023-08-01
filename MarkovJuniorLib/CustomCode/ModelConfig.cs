@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace MarkovJuniorLib.CustomCode
+namespace MarkovJuniorLib
 {
     public class ModelConfig
     {

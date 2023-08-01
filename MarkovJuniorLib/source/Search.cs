@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
+using Debug = UnityEngine.Debug;
+
 /// <summary>
 /// Attempts to find a trajectory of grid states, starting from the present
 /// state and ending in a state that matches the future goal. Each state in the
@@ -44,10 +46,10 @@ static class Search
         // if either of these estimates are -1 then the goal is definitely not reachable
         if (rootBackwardEstimate < 0 || rootForwardEstimate < 0)
         {
-            Console.WriteLine("INCORRECT PROBLEM");
+            Debug.LogError("INCORRECT PROBLEM");
             return null;
         }
-        Console.WriteLine($"root estimate = ({rootBackwardEstimate}, {rootForwardEstimate})");
+        //Console.WriteLine($"root estimate = ({rootBackwardEstimate}, {rootForwardEstimate})");
         
         // if the present state already matches the future, there is no need to search
         if (rootBackwardEstimate == 0) return Array.Empty<byte[]>();
@@ -120,7 +122,7 @@ static class Search
 
                     if (childBoard.forwardEstimate == 0)
                     {
-                        Console.WriteLine($"found a trajectory of length {parentBoard.depth + 1}, visited {visited.Count} states");
+                        //Console.WriteLine($"found a trajectory of length {parentBoard.depth + 1}, visited {visited.Count} states");
                         List<Board> trajectory = Board.Trajectory(childIndex, database);
                         trajectory.Reverse();
                         return trajectory.Select(b => b.state).ToArray();
@@ -130,8 +132,8 @@ static class Search
                         if (limit < 0 && childBackwardEstimate + childForwardEstimate <= record)
                         {
                             record = childBackwardEstimate + childForwardEstimate;
-                            Console.WriteLine($"found a state of record estimate {record} = {childBackwardEstimate} + {childForwardEstimate}");
-                            childState.Print(MX, MY);
+                            //Console.WriteLine($"found a state of record estimate {record} = {childBackwardEstimate} + {childForwardEstimate}");
+                            //childState.Print(MX, MY);
                         }
                         frontier.Enqueue(childIndex, childBoard.Rank(random, depthCoefficient));
                         frontierLength++;
@@ -192,18 +194,18 @@ static class Search
         return result;
     }
     
-    /// <summary>
-    /// Prints a textual representation of the grid state to the console.
-    /// </summary>
-    static void Print(this byte[] state, int MX, int MY)
-    {
-        char[] characters = new[] { '.', 'R', 'W', '#', 'a', '!', '?', '%', '0', '1', '2', '3', '4', '5' };
-        for (int y = 0; y < MY; y++)
-        {
-            for (int x = 0; x < MX; x++) Console.Write($"{characters[state[x + y * MX]]} ");
-            Console.WriteLine();
-        }
-    }
+    ///// <summary>
+    ///// Prints a textual representation of the grid state to the console.
+    ///// </summary>
+    //static void Print(this byte[] state, int MX, int MY)
+    //{
+    //    char[] characters = new[] { '.', 'R', 'W', '#', 'a', '!', '?', '%', '0', '1', '2', '3', '4', '5' };
+    //    for (int y = 0; y < MY; y++)
+    //    {
+    //        for (int x = 0; x < MX; x++) Console.Write($"{characters[state[x + y * MX]]} ");
+    //        Console.WriteLine();
+    //    }
+    //}
 
     /// <summary>
     /// Determines whether this (x, y) tuple is inside the input pattern of the

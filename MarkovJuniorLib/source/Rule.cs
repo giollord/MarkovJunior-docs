@@ -3,7 +3,7 @@
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
 
 /// <summary>
 /// Represents a single rewrite rule, with an input pattern and an output
@@ -201,19 +201,19 @@ class Rule
     {
         if (legend == null)
         {
-            Interpreter.WriteLine($"no legend for {name}");
+            Interpreter.Error($"no legend for {name}");
             return (null, -1, -1, -1);
         }
         (int[] data, int MX, int MY, int MZ) = d2 ? Graphics.LoadBitmap(config.Samples[name]) : VoxHelper.LoadVox(config.Resources[name]);
         if (data == null)
         {
-            Interpreter.WriteLine($"couldn't read {name}");
+            Interpreter.Error($"couldn't read {name}");
             return (null, MX, MY, MZ);
         }
         (byte[] ords, int amount) = data.Ords();
         if (amount > legend.Length)
         {
-            Interpreter.WriteLine($"the amount of colors {amount} in {name} is more than {legend.Length}");
+            Interpreter.Error($"the amount of colors {amount} in {name} is more than {legend.Length}");
             return (null, MX, MY, MZ);
         }
         return (ords.Select(o => legend[o]).ToArray(), MX, MY, MZ);
@@ -237,7 +237,7 @@ class Rule
             string[] linesz = lines[MZ - 1 - z];
             if (linesz.Length != MY)
             {
-                Interpreter.Write("non-rectangular pattern");
+                Interpreter.Error("non-rectangular pattern");
                 return (null, -1, -1, -1);
             }
             for (int y = 0; y < MY; y++)
@@ -245,7 +245,7 @@ class Rule
                 string lineszy = linesz[y];
                 if (lineszy.Length != MX)
                 {
-                    Interpreter.Write("non-rectangular pattern");
+                    Interpreter.Error("non-rectangular pattern");
                     return (null, -1, -1, -1);
                 }
                 for (int x = 0; x < MX; x++) result[x + y * MX + z * MX * MY] = lineszy[x];
@@ -288,32 +288,32 @@ class Rule
         {
             if (inString == null && finString == null)
             {
-                Interpreter.WriteLine($"no input in a rule at line {lineNumber}");
+                Interpreter.Error($"no input in a rule at line {lineNumber}");
                 return null;
             }
             if (outString == null && foutString == null)
             {
-                Interpreter.WriteLine($"no output in a rule at line {lineNumber}");
+                Interpreter.Error($"no output in a rule at line {lineNumber}");
                 return null;
             }
 
             (inRect, IMX, IMY, IMZ) = inString != null ? Parse(inString) : LoadResource(config, finString, legend, gin.MZ == 1);
             if (inRect == null)
             {
-                Interpreter.WriteLine($" in input at line {lineNumber}");
+                Interpreter.Error($" in input at line {lineNumber}");
                 return null;
             }
 
             (outRect, OMX, OMY, OMZ) = outString != null ? Parse(outString) : LoadResource(config, foutString, legend, gin.MZ == 1);
             if (outRect == null)
             {
-                Interpreter.WriteLine($" in output at line {lineNumber}");
+                Interpreter.Error($" in output at line {lineNumber}");
                 return null;
             }
 
             if (gin == gout && (OMZ != IMZ || OMY != IMY || OMX != IMX))
             {
-                Interpreter.WriteLine($"non-matching pattern sizes at line {lineNumber}");
+                Interpreter.Error($"non-matching pattern sizes at line {lineNumber}");
                 return null;
             }
         }
@@ -321,18 +321,18 @@ class Rule
         {
             if (inString != null || finString != null || outString != null || foutString != null)
             {
-                Interpreter.WriteLine($"rule at line {lineNumber} already contains a file attribute");
+                Interpreter.Error($"rule at line {lineNumber} already contains a file attribute");
                 return null;
             }
             (char[] rect, int FX, int FY, int FZ) = LoadResource(config, fileString, legend, gin.MZ == 1);
             if (rect == null)
             {
-                Interpreter.WriteLine($" in a rule at line {lineNumber}");
+                Interpreter.Error($" in a rule at line {lineNumber}");
                 return null;
             }
             if (FX % 2 != 0)
             {
-                Interpreter.WriteLine($"odd width {FX} in {fileString}");
+                Interpreter.Error($"odd width {FX} in {fileString}");
                 return null;
             }
             
@@ -351,7 +351,7 @@ class Rule
             bool success = gin.waves.TryGetValue(c, out int value);
             if (!success)
             {
-                Interpreter.WriteLine($"input code {c} at line {lineNumber} is not found in codes");
+                Interpreter.Error($"input code {c} at line {lineNumber} is not found in codes");
                 return null;
             }
             input[i] = value;
@@ -367,7 +367,7 @@ class Rule
                 bool success = gout.values.TryGetValue(c, out byte value);
                 if (!success)
                 {
-                    Interpreter.WriteLine($"output code {c} at line {lineNumber} is not found in codes");
+                    Interpreter.Error($"output code {c} at line {lineNumber} is not found in codes");
                     return null;
                 }
                 output[o] = value;

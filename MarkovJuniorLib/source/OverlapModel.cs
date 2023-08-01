@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
 
 /// <summary>
 /// A 'wfc' node which uses an overlapping Wave Function Collapse model.
@@ -18,7 +18,7 @@ class OverlapNode : WFCNode
     {
         if (grid.MZ != 1)
         {
-            Interpreter.WriteLine("overlapping model currently works only for 2d");
+            Interpreter.Error("overlapping model currently works only for 2d");
             return false;
         }
         N = xelem.Get("n", 3);
@@ -27,7 +27,7 @@ class OverlapNode : WFCNode
         bool[] symmetry = SymmetryHelper.GetSymmetry(true, symmetryString, parentSymmetry);
         if (symmetry == null)
         {
-            Interpreter.WriteLine($"unknown symmetry {symmetryString} at line {xelem.LineNumber()}");
+            Interpreter.Error($"unknown symmetry {symmetryString} at line {xelem.LineNumber()}");
             return false;
         }
 
@@ -41,13 +41,13 @@ class OverlapNode : WFCNode
         (int[] bitmap, int SMX, int SMY, _) = Graphics.LoadBitmap(config.Samples[name]);
         if (bitmap == null)
         {
-            Interpreter.WriteLine($"couldn't read sample {name}");
+            Interpreter.Error($"couldn't read sample {name}");
             return false;
         }
         (byte[] sample, int C) = bitmap.Ords();
         if (C > newgrid.C)
         {
-            Interpreter.WriteLine($"there were more than {newgrid.C} colors in the sample");
+            Interpreter.Error($"there were more than {newgrid.C} colors in the sample");
             return false;
         }
         long W = Helper.Power(C, N * N);
@@ -97,7 +97,7 @@ class OverlapNode : WFCNode
             }
 
         P = weights.Count;
-        Console.WriteLine($"number of patterns P = {P}");
+        //Console.WriteLine($"number of patterns P = {P}");
 
         patterns = new byte[P][];
         base.weights = new double[P];

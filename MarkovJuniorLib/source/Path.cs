@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
 
 /// <summary>
 /// A 'path' node draws paths between specific colors in the grid. On each

@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
 
 /// <summary>
 /// An 'all' node applies its rewrite rules to all possible non-overlapping

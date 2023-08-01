@@ -70,7 +70,7 @@ class Grid
         string valueString = xelem.Get<string>("values", null)?.Replace(" ", "");
         if (valueString == null)
         {
-            Interpreter.WriteLine("no values specified");
+            Interpreter.Error("no values specified");
             return null;
         }
 
@@ -83,7 +83,7 @@ class Grid
             char symbol = valueString[i];
             if (g.values.ContainsKey(symbol))
             {
-                Interpreter.WriteLine($"repeating value {symbol} at line {xelem.LineNumber()}");
+                Interpreter.Error($"repeating value {symbol} at line {xelem.LineNumber()}");
                 return null;
             }
             else
@@ -104,7 +104,7 @@ class Grid
             char symbol = xunion.Get<char>("symbol");
             if (g.waves.ContainsKey(symbol))
             {
-                Interpreter.WriteLine($"repeating union type {symbol} at line {xunion.LineNumber()}");
+                Interpreter.Error($"repeating union type {symbol} at line {xunion.LineNumber()}");
                 return null;
             }
             else

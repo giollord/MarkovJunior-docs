@@ -4,7 +4,8 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
+using UnityEngine;
 
 /// <summary>
 /// Base class for AST nodes which have <see cref="Rule">rewrite rules</see>
@@ -166,7 +167,7 @@ abstract class RuleNode : Node
         bool[] symmetry = SymmetryHelper.GetSymmetry(grid.MZ == 1, symmetryString, parentSymmetry);
         if (symmetry == null)
         {
-            Interpreter.WriteLine($"unknown symmetry {symmetryString} at line {xelem.LineNumber()}");
+            Interpreter.Error($"unknown symmetry {symmetryString} at line {xelem.LineNumber()}");
             return false;
         }
 
@@ -184,7 +185,7 @@ abstract class RuleNode : Node
             bool[] ruleSymmetry = SymmetryHelper.GetSymmetry(grid.MZ == 1, ruleSymmetryString, symmetry);
             if (ruleSymmetry == null)
             {
-                Interpreter.WriteLine($"unknown symmetry {ruleSymmetryString} at line {xrule.LineNumber()}");
+                Interpreter.Error($"unknown symmetry {ruleSymmetryString} at line {xrule.LineNumber()}");
                 return false;
             }
             foreach (Rule r in rule.Symmetries(ruleSymmetry, grid.MZ == 1)) ruleList.Add(r);
@@ -205,7 +206,7 @@ abstract class RuleNode : Node
                 if (grid.values.TryGetValue(c, out byte value)) fields[value] = new Field(xfield, grid);
                 else
                 {
-                    Interpreter.WriteLine($"unknown field value {c} at line {xfield.LineNumber()}");
+                    Interpreter.Error($"unknown field value {c} at line {xfield.LineNumber()}");
                     return false;
                 }
             }
@@ -286,7 +287,7 @@ abstract class RuleNode : Node
                     trajectory = null;
                     int TRIES = limit < 0 ? 1 : 20;
                     for (int k = 0; k < TRIES && trajectory == null; k++) trajectory = Search.Run(grid.state, future, rules, grid.MX, grid.MY, grid.MZ, grid.C, this is AllNode, limit, depthCoefficient, ip.random.Next());
-                    if (trajectory == null) Console.WriteLine("SEARCH RETURNED NULL");
+                    if (trajectory == null) Debug.Log("SEARCH RETURNED NULL");
                 }
                 else
                 {

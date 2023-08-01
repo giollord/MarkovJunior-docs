@@ -3,7 +3,7 @@
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
 
 /// <summary>
 /// <para>
@@ -226,12 +226,12 @@ class ConvolutionNode : Node
             string sumsString = xelem.Get<string>("sum", null);
             if (valueString != null && sumsString == null)
             {
-                Interpreter.WriteLine($"missing \"sum\" attribute at line {xelem.LineNumber()}");
+                Interpreter.Error($"missing \"sum\" attribute at line {xelem.LineNumber()}");
                 return false;
             }
             if (valueString == null && sumsString != null)
             {
-                Interpreter.WriteLine($"missing \"values\" attribute at line {xelem.LineNumber()}");
+                Interpreter.Error($"missing \"values\" attribute at line {xelem.LineNumber()}");
                 return false;
             }
             

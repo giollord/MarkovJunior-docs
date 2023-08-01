@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
 
 /// <summary>
 /// A 'wfc' node which uses a tile-based Wave Function Collapse model.
@@ -46,17 +46,17 @@ class TileNode : WFCNode
         (firstData, S, SY, SZ) = VoxHelper.LoadVox(config.Resources[firstFileName]);
         if (firstData == null)
         {
-            Interpreter.WriteLine($"couldn't read {firstFileName}");
+            Interpreter.Error($"couldn't read {firstFileName}");
             return false;
         }
         if (S != SY)
         {
-            Interpreter.WriteLine($"tiles should be square shaped: {S} != {SY}");
+            Interpreter.Error($"tiles should be square shaped: {S} != {SY}");
             return false;
         }
         if (fullSymmetry && S != SZ)
         {
-            Interpreter.WriteLine($"tiles should be cubes for the full symmetry option: {S} != {SZ}");
+            Interpreter.Error($"tiles should be cubes for the full symmetry option: {S} != {SZ}");
             return false;
         }
 
@@ -89,13 +89,13 @@ class TileNode : WFCNode
             int[] vox = VoxHelper.LoadVox(config.Resources[filename]).Item1;
             if (vox == null)
             {
-                Interpreter.WriteLine($"couldn't read tile {filename}");
+                Interpreter.Error($"couldn't read tile {filename}");
                 return false;
             }
             (byte[] flatTile, int C) = vox.Ords(uniques);
             if (C > newgrid.C)
             {
-                Interpreter.WriteLine($"there were more than {newgrid.C} colors in vox files");
+                Interpreter.Error($"there were more than {newgrid.C} colors in vox files");
                 return false;
             }
 
@@ -115,7 +115,7 @@ class TileNode : WFCNode
         }
 
         P = tiledata.Count;
-        Console.WriteLine($"P = {P}");
+        //Console.WriteLine($"P = {P}");
         weights = tempStationary.ToArray();
 
         map = new Dictionary<byte, bool[]>();
@@ -129,7 +129,7 @@ class TileNode : WFCNode
                 bool success = positions.TryGetValue(s, out bool[] array);
                 if (!success)
                 {
-                    Interpreter.WriteLine($"unknown tilename {s} at line {xrule.LineNumber()}");
+                    Interpreter.Error($"unknown tilename {s} at line {xrule.LineNumber()}");
                     return false;
                 }
                 for (int p = 0; p < P; p++) if (array[p]) position[p] = true;
@@ -160,7 +160,7 @@ class TileNode : WFCNode
                 else if (sym == 'z') starttile = zRotate(starttile);
                 else
                 {
-                    Interpreter.WriteLine($"unknown symmetry {sym}");
+                    Interpreter.Error($"unknown symmetry {sym}");
                     return null;
                 }
             }
@@ -177,7 +177,7 @@ class TileNode : WFCNode
                 string left = xneighbor.Get<string>("left"), right = xneighbor.Get<string>("right");
                 if (!tilenames.Contains(last(left)) || !tilenames.Contains(last(right)))
                 {
-                    Interpreter.WriteLine($"unknown tile {last(left)} or {last(right)} at line {xneighbor.LineNumber()}");
+                    Interpreter.Error($"unknown tile {last(left)} or {last(right)} at line {xneighbor.LineNumber()}");
                     return false;
                 }
 
@@ -222,7 +222,7 @@ class TileNode : WFCNode
                 string left = xneighbor.Get<string>("left"), right = xneighbor.Get<string>("right");
                 if (!tilenames.Contains(last(left)) || !tilenames.Contains(last(right)))
                 {
-                    Interpreter.WriteLine($"unknown tile {last(left)} or {last(right)} at line {xneighbor.LineNumber()}");
+                    Interpreter.Error($"unknown tile {last(left)} or {last(right)} at line {xneighbor.LineNumber()}");
                     return false;
                 }
 
@@ -247,7 +247,7 @@ class TileNode : WFCNode
                 string top = xneighbor.Get<string>("top", null), bottom = xneighbor.Get<string>("bottom", null);
                 if (!tilenames.Contains(last(top)) || !tilenames.Contains(last(bottom)))
                 {
-                    Interpreter.WriteLine($"unknown tile {last(top)} or {last(bottom)} at line {xneighbor.LineNumber()}");
+                    Interpreter.Error($"unknown tile {last(top)} or {last(bottom)} at line {xneighbor.LineNumber()}");
                     return false;
                 }
 

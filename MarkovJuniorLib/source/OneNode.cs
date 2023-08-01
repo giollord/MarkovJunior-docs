@@ -3,7 +3,7 @@
 using System;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
 
 /// <summary>
 /// A 'one' node applies one of its rewrite rules to one random match on each

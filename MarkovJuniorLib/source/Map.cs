@@ -2,7 +2,7 @@
 
 using System.Xml.Linq;
 using System.Collections.Generic;
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
 
 /// <summary>
 /// <para>
@@ -51,13 +51,13 @@ class MapNode : Branch
         string scalestring = xelem.Get<string>("scale", null);
         if (scalestring == null)
         {
-            Interpreter.WriteLine($"scale should be specified in map node");
+            Interpreter.Error($"scale should be specified in map node");
             return false;
         }
         string[] scales = scalestring.Split(' ');
         if (scales.Length != 3)
         {
-            Interpreter.WriteLine($"scale attribute \"{scalestring}\" should have 3 components separated by space");
+            Interpreter.Error($"scale attribute \"{scalestring}\" should have 3 components separated by space");
             return false;
         }
         

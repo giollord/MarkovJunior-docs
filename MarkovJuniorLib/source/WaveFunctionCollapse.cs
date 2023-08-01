@@ -3,7 +3,9 @@
 using System;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
+
+using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// Base class for 'wfc' nodes, which run the Wave Function Collapse algorithm.
@@ -170,7 +172,7 @@ abstract class WFCNode : Branch
             bool firstSuccess = Propagate();
             if (!firstSuccess)
             {
-                Console.WriteLine("initial conditions are contradictive");
+                Debug.LogError("initial conditions are contradictive");
                 return false;
             }
             
@@ -232,19 +234,19 @@ abstract class WFCNode : Branch
                     bool success = Propagate();
                     if (!success)
                     {
-                        Console.WriteLine($"CONTRADICTION on try {k} with {observationsSoFar} observations");
+                        //Console.WriteLine($"CONTRADICTION on try {k} with {observationsSoFar} observations");
                         break;
                     }
                 }
                 else
                 {
-                    Console.WriteLine($"wfc found a good seed {seed} on try {k} with {observationsSoFar} observations");
+                    //Console.WriteLine($"wfc found a good seed {seed} on try {k} with {observationsSoFar} observations");
                     return seed;
                 }
             }
         }
 
-        Console.WriteLine($"wfc failed to find a good seed in {tries} tries");
+        //Console.WriteLine($"wfc failed to find a good seed in {tries} tries");
         return null;
     }
 

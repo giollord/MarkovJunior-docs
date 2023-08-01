@@ -3,7 +3,10 @@
 using System;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
+using System.Diagnostics;
+
+using Debug = UnityEngine.Debug;
 
 /// <summary>
 /// Runs a MarkovJunior program, yielding either the final grid state, or the
@@ -79,7 +82,7 @@ class Interpreter
         ip.grid = Grid.Load(xelem, MX, MY, MZ);
         if (ip.grid == null)
         {
-            Console.WriteLine("failed to load grid");
+            Debug.LogError("failed to load grid");
             return null;
         }
         ip.startgrid = ip.grid;
@@ -88,7 +91,7 @@ class Interpreter
         bool[] symmetry = SymmetryHelper.GetSymmetry(ip.grid.MZ == 1, symmetryString, AH.Array1D(ip.grid.MZ == 1 ? 8 : 48, true));
         if (symmetry == null)
         {
-            WriteLine($"unknown symmetry {symmetryString} at line {xelem.LineNumber()}");
+            Error($"unknown symmetry {symmetryString} at line {xelem.LineNumber()}");
             return null;
         }
 
@@ -135,7 +138,7 @@ class Interpreter
         {
             if (gif)
             {
-                Console.WriteLine($"[{counter}]");
+                //Console.WriteLine($"[{counter}]");
                 yield return (grid.state, grid.characters, grid.MX, grid.MY, grid.MZ);
             }
 
@@ -148,8 +151,5 @@ class Interpreter
     }
 
     /// <summary>Writes a string to the log, with a newline.</summary>
-    public static void WriteLine(string s) => Console.WriteLine(s);
-    
-    /// <summary>Writes a string to the log, without a newline.</summary>
-    public static void Write(string s) => Console.Write(s);
+    public static void Error(string s) => Debug.LogError(s);
 }

@@ -1,6 +1,6 @@
 ﻿// Copyright (C) 2022 Maxim Gumin, The MIT License (MIT)
 
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
 using System;
 using System.Xml.Linq;
 
@@ -73,7 +73,7 @@ class ConvChainNode : Node
     {
         if (grid.MZ != 1)
         {
-            Interpreter.WriteLine("convchain currently works only for 2d");
+            Interpreter.Error("convchain currently works only for 2d");
             return false;
         }
 

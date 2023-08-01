@@ -296,7 +296,7 @@ static class GUI
                 }
                 else if (node is MapNode)
                 {
-                    Console.WriteLine("ERROR! Map is Branch");
+                    Debug.LogError("ERROR! Map is Branch");
                     write("map", x, y, NODECOLOR);
                     y += fonts[0].FY + VSKIP;
                 }

@@ -1,6 +1,6 @@
 ﻿// Copyright (C) 2022 Maxim Gumin, The MIT License (MIT)
 
-using MarkovJuniorLib.CustomCode;
+using MarkovJuniorLib;
 using System.Xml.Linq;
 
 /// <summary>

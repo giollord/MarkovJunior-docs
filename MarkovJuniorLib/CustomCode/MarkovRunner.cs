@@ -1,5 +1,4 @@
-﻿using MarkovJuniorLib.CustomCode;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
@@ -7,7 +6,7 @@ using UnityEngine;
 
 namespace MarkovJuniorLib
 {
-    public static class Runner
+    public static class MarkovRunner
     {
         public static Dictionary<char, Color32> GetMainPallette()
         {
