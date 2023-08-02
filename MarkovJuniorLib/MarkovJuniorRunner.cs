@@ -10,14 +10,16 @@ using GUI = MarkovJuniorLib.Internal.GUI;
 
 namespace MarkovJuniorLib
 {
-    public static class MarkovRunner
+    /// <summary>
+    /// Entry point to run MarkovJunior algorithm
+    /// </summary>
+    public static class MarkovJuniorRunner
     {
-        public static Dictionary<char, Color32> GetMainPallette()
-        {
-            return GetPallette().Where(x => char.IsUpper(x.Key)).ToDictionary(x => x.Key, x => x.Value);
-        }
-
-        public static Dictionary<char, Color32> GetPallette()
+        /// <summary>
+        /// Get default pallette
+        /// </summary>
+        /// <returns>Dictionary with symbols and matching colors</returns>
+        public static Dictionary<char, Color32> GetDefaultPallette()
         {
             static byte GetColorComp(int val, int comp) => (byte)((val >> (comp * 8)) & 255);
 
@@ -32,6 +34,12 @@ namespace MarkovJuniorLib
             return pallette;
         }
 
+        /// <summary>
+        /// Run algorithm lazily, so results will be generated during enumeration
+        /// </summary>
+        /// <param name="modelConfig">Configuration</param>
+        /// <returns>Results of execution</returns>
+        /// <exception cref="Exception">Throws exception if something goes wrong</exception>
         public static IEnumerable<RunResult> Run(ModelConfig modelConfig)
         {
             //Resources.palette
@@ -41,8 +49,7 @@ namespace MarkovJuniorLib
             using var modelTextReader = new System.IO.StringReader(modelConfig.ModelXML);
             XDocument modeldoc = XDocument.Load(modelTextReader, LoadOptions.SetLineInfo);
 
-            Interpreter interpreter = Interpreter.Load(modelConfig, modeldoc.Root, modelConfig.MX, modelConfig.MY, modelConfig.MZ);
-            //interpreter.
+            Interpreter interpreter = Interpreter.Load(modelConfig, modeldoc.Root, modelConfig.Width_MX, modelConfig.Height_MY, modelConfig.Depth_MZ);
             if (interpreter == null)
             {
                 throw new Exception("Can not create interpreter");
@@ -54,9 +61,9 @@ namespace MarkovJuniorLib
             byte[] initialState = null;
             if(modelConfig.InitialTexture != null)
             {
-                if (modelConfig.InitialTexture.width != modelConfig.MX || modelConfig.InitialTexture.height != modelConfig.MY)
+                if (modelConfig.InitialTexture.width != modelConfig.Width_MX || modelConfig.InitialTexture.height != modelConfig.Height_MY)
                     throw new Exception("Initial texture width and height must match MX and MY");
-                if (modelConfig.MZ != 1)
+                if (modelConfig.Depth_MZ != 1)
                     throw new Exception("Initial texture can be only provided when MZ is 1");
 
                 var (initialColors, _, _, _) = Graphics.LoadBitmap(modelConfig.InitialTexture);
@@ -75,12 +82,12 @@ namespace MarkovJuniorLib
                 foreach ((byte[] result, char[] legend, int FX, int FY, int FZ) in interpreter.Run(seed, modelConfig.Steps, modelConfig.Gif, initialState))
                 {
                     int[] colors = legend.Select(ch => customPalette[ch]).ToArray();
-                    string outputname = modelConfig.Gif ? $"output/{interpreter.counter}" : $"output/{modelConfig.Name}_{seed}";
+                    //string outputname = modelConfig.Gif ? $"output/{interpreter.counter}" : $"output/{modelConfig.Name}_{seed}";
                     if (FZ == 1 || modelConfig.Iso)
                     {
                         var (bitmap, WIDTH, HEIGHT) = Graphics.Render(result, FX, FY, FZ, colors, modelConfig.PixelSize, modelConfig.Gui);
                         if (modelConfig.Gui > 0) GUI.Draw(modelConfig.Name, interpreter.root, interpreter.current, bitmap, WIDTH, HEIGHT, customPalette);
-                        var tex = Graphics.SaveBitmap(bitmap, WIDTH, HEIGHT, outputname + ".png");
+                        var tex = Graphics.SaveBitmap(bitmap, WIDTH, HEIGHT);
                         yield return new RunResult { Texture = tex };
                     }
                     else
@@ -91,11 +98,5 @@ namespace MarkovJuniorLib
                 }
             }
         }
-    }
-
-    public class RunResult
-    {
-        public Texture2D Texture { get; set; }
-        public byte[] Vox { get; set; }
     }
 }
