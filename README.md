@@ -69,7 +69,7 @@ In order to use library with asset textures (like in [Example 3](#example-3)), e
 ## Example 1
 Just simplest example
 
-![Cave sample](/ReadmeImages/cave.png)
+![Cave sample](/ReadmeImages/cave.PNG)
 
 ### Example 2
 Input image is generated using default colors with Map Graph and then passed to MarkovJunior runner.
@@ -85,11 +85,11 @@ In this example used modified [voronoi.xml](https://github.com/mxgmn/MarkovJunio
 </sequence>
 ```
 
-![Initial texture](/ReadmeImages/initial-texture.png)
+![Initial texture](/ReadmeImages/initial-texture.PNG)
 
 ### Example 3
 Demonstrates how to use texture sample named "Flowers" in WFC node. XML is taken from [WaveFlowers.xml](https://github.com/mxgmn/MarkovJunior/blob/main/models/WaveFlowers.xml), image taken from [Flowers.png](https://github.com/mxgmn/MarkovJunior/blob/main/resources/samples/Flowers.png).
 
 Used texture import settings should follow the rules in section [Using asset textures](#Using-asset-textures)
 
-![Flowers](/ReadmeImages/flowers.png)
+![Flowers](/ReadmeImages/flowers.PNG)
