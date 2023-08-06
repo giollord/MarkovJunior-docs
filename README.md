@@ -25,15 +25,15 @@ Probably some other bugs
 ## Install to Unity
 ### Option 1 - install .unitypackage
 
-You can find latest package in [releases](/releases/latest).
+You can find latest package in [releases](../releases/latest).
 
-### Option 1 - copy-paste MarkovJuniorUnity folder
+### Option 2 - copy-paste MarkovJuniorUnity folder
 
 Copy `MarkovJuniorUnity` folder to your project's `Assets` folder.
 
 If you do not use Map Graph, just remove folder `MapGraphExt`
 
-### Option 2 - DLL
+### Option 3 - DLL
 Might be needed if you use older Unity version and having compilation errors.
 
 Build solution separately (will need to update dependency to UnityEngine.dll) and put DLL to `Assets` folder of your Unity project.

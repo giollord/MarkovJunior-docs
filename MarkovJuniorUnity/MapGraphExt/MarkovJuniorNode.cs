@@ -44,6 +44,9 @@ namespace MapGraphMarkovJunior
         [InPort("XML override", typeof(string)), SerializeReference]
         private InPort xmlOverrideIn;
 
+        [InPort("Colors override", typeof(ModelColor[])), SerializeReference]
+        private InPort colorsOverrideIn;
+
 
         [OutPort("Result", typeof(TextureData)), SerializeReference]
         private OutPort resultOut = null;
@@ -84,6 +87,7 @@ namespace MapGraphMarkovJunior
                 Enumerable.Range(0, resultNodes.Count).Select(i => i == 0 ? seed : rnd.Next()).ToArray() :
                 Enumerable.Range(0, resultNodes.Count).Select(_ => Random.Range(0, int.MaxValue)).ToArray();
             var modelXml = GetValue(xmlOverrideIn, () => xml);
+            var colorsOverride = GetValue(colorsOverrideIn, () => new ModelColor[0]);
 
             var cfg = new ModelConfig
             {
@@ -95,7 +99,8 @@ namespace MapGraphMarkovJunior
                 Seeds = seeds,
                 Width_MX = size.x,
                 Height_MY = size.y,
-                Samples = textureSamples
+                Samples = textureSamples,
+                Colors = colorsOverride
             };
 
             var result = MarkovJuniorRunner.Run(cfg).ToList();
