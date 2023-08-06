@@ -25,7 +25,7 @@ Probably some other bugs
 ## Install to Unity
 ### Option 1 - install .unitypackage
 
-You can find latest package in [releases](../releases/latest).
+You can find latest package in [releases](https://github.com/giollord/MarkovJunior-unity-lib/releases/latest).
 
 ### Option 2 - copy-paste MarkovJuniorUnity folder
 
