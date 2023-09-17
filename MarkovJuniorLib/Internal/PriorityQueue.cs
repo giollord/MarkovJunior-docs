@@ -1,14 +1,14 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
+using MarkovJuniorLib.ToOverride;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using UnityEngine;
 
-using Debug = UnityEngine.Debug;
+using Debug = MarkovJuniorLib.ToOverride.Debug;
 
 namespace MarkovJuniorLib.Internal
 {

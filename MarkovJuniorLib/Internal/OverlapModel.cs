@@ -39,7 +39,7 @@ namespace MarkovJuniorLib.Internal
             periodic = true;
 
             name = xelem.Get<string>("sample");
-            (int[] bitmap, int SMX, int SMY, _) = Graphics.LoadBitmap(config.Samples[name]);
+            (int[] bitmap, int SMX, int SMY, _) = Graphics.LoadBitmap(config.SamplesInternal[name]);
             if (bitmap == null)
             {
                 Interpreter.Error($"couldn't read sample {name}");

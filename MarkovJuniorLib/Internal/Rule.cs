@@ -205,7 +205,7 @@ namespace MarkovJuniorLib.Internal
                 Interpreter.Error($"no legend for {name}");
                 return (null, -1, -1, -1);
             }
-            (int[] data, int MX, int MY, int MZ) = d2 ? Graphics.LoadBitmap(config.Samples[name]) : VoxHelper.LoadVox(config.Resources[name]);
+            (int[] data, int MX, int MY, int MZ) = d2 ? Graphics.LoadBitmap(config.SamplesInternal[name]) : VoxHelper.LoadVox(config.Resources[name]);
             if (data == null)
             {
                 Interpreter.Error($"couldn't read {name}");

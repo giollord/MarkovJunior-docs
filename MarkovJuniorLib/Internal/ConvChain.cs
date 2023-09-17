@@ -1,7 +1,7 @@
 ﻿// Copyright (C) 2022 Maxim Gumin, The MIT License (MIT)
 
+using MarkovJuniorLib.ToOverride;
 using System.Xml.Linq;
-using UnityEngine;
 
 namespace MarkovJuniorLib.Internal
 {
@@ -80,7 +80,7 @@ namespace MarkovJuniorLib.Internal
 
             string name = xelem.Get<string>("sample");
             int[] bitmap;
-            (bitmap, SMX, SMY, _) = Graphics.LoadBitmap(config.Samples[name]);
+            (bitmap, SMX, SMY, _) = Graphics.LoadBitmap(config.SamplesInternal[name]);
             if (bitmap == null)
             {
                 return false;

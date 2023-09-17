@@ -4,8 +4,8 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using UnityEngine;
 using System.IO;
+using MarkovJuniorLib.ToOverride;
 
 namespace MarkovJuniorLib.Internal
 {
@@ -13,37 +13,23 @@ namespace MarkovJuniorLib.Internal
     /// Draws a visual representation of the state of the interpreter, alongside
     /// the state of the grid.
     /// </summary>
-    static class GUI
+    internal class GUI
     {
-        static readonly int S, SMALL, MAXWIDTH, ZSHIFT, HINDENT, HGAP, HARROW, HLINE, VSKIP, SMALLVSKIP, FONTSHIFT, AFTERFONT;
-        static readonly bool DENSE, D3;
+        private static readonly int S, SMALL, MAXWIDTH, ZSHIFT, HINDENT, HGAP, HARROW, HLINE, VSKIP, SMALLVSKIP, FONTSHIFT, AFTERFONT;
+        private static readonly bool DENSE, D3;
         public static readonly int BACKGROUND, INACTIVE, ACTIVE;
 
         const string FONT = "Tamzen8x16r", TITLEFONT = "Tamzen8x16b";
-        static readonly (bool[], int FX, int FY)[] fonts;
+        private readonly (bool[], int FX, int FY)[] fonts;
 
         /// <summary>The order of characters in a raster font.</summary>
-        static readonly char[] legend = "ABCDEFGHIJKLMNOPQRSTUVWXYZ 12345abcdefghijklmnopqrstuvwxyz\u03bb67890{}[]()<>$*-+=/#_%^@\\&|~?'\"`!,.;:".ToCharArray();
+        private readonly char[] legend = "ABCDEFGHIJKLMNOPQRSTUVWXYZ 12345abcdefghijklmnopqrstuvwxyz\u03bb67890{}[]()<>$*-+=/#_%^@\\&|~?'\"`!,.;:".ToCharArray();
 
         /// <summary>Index lookup map for <see cref="GUI.legend">legend</see>.</summary>
-        static readonly Dictionary<char, byte> map;
+        private readonly Dictionary<char, byte> map;
 
         static GUI()
         {
-            map = new Dictionary<char, byte>();
-            for (int i = 0; i < legend.Length; i++) map.Add(legend[i], (byte)i);
-            fonts = new (bool[], int, int)[2];
-
-            (int[] bitmap, int width, int height, _) = Graphics.LoadBitmap(Constants.Font_Tamzen8x16r_Bytes);
-            int b0 = bitmap[0];
-            int b1 = bitmap[width - 1];
-            fonts[0] = (bitmap.Select(argb => argb != b0 && argb != b1).ToArray(), width / 32, height / 3);
-
-            (bitmap, width, height, _) = Graphics.LoadBitmap(Constants.Font_Tamzen8x16b_Bytes);
-            b0 = bitmap[0];
-            b1 = bitmap[width - 1];
-            fonts[1] = (bitmap.Select(argb => argb != b0 && argb != b1).ToArray(), width / 32, height / 3);
-
             using var textReader = new StringReader(Constants.Settings_XML);
             XElement settings = XDocument.Load(textReader).Root;
             S = settings.Get("squareSize", 7);
@@ -65,10 +51,27 @@ namespace MarkovJuniorLib.Internal
             ACTIVE = (255 << 24) + Convert.ToInt32(settings.Get("active", "ffffff"), 16);
         }
 
+        public GUI(ITextureHelper textureHelper)
+        {
+            map = new Dictionary<char, byte>();
+            for (int i = 0; i < legend.Length; i++) map.Add(legend[i], (byte)i);
+            fonts = new (bool[], int, int)[2];
+
+            (int[] bitmap, int width, int height, _) = Graphics.LoadBitmap(textureHelper, Constants.Font_Tamzen8x16r_Bytes);
+            int b0 = bitmap[0];
+            int b1 = bitmap[width - 1];
+            fonts[0] = (bitmap.Select(argb => argb != b0 && argb != b1).ToArray(), width / 32, height / 3);
+
+            (bitmap, width, height, _) = Graphics.LoadBitmap(textureHelper, Constants.Font_Tamzen8x16b_Bytes);
+            b0 = bitmap[0];
+            b1 = bitmap[width - 1];
+            fonts[1] = (bitmap.Select(argb => argb != b0 && argb != b1).ToArray(), width / 32, height / 3);
+        }
+
         /// <summary>
         /// <inheritdoc cref="GUI" path="/summary"/>
         /// </summary>
-        public static void Draw(string name, Branch root, Branch current, int[] bitmap, int WIDTH, int HEIGHT, Dictionary<char, int> palette)
+        public void Draw(string name, Branch root, Branch current, int[] bitmap, int WIDTH, int HEIGHT, Dictionary<char, int> palette)
         {
             void drawRectangle(int x, int y, int width, int height, int color)
             {

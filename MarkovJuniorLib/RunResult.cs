@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using MarkovJuniorLib.ToOverride;
 
 namespace MarkovJuniorLib
 {
@@ -10,7 +10,19 @@ namespace MarkovJuniorLib
         /// <summary>
         /// Result texture
         /// </summary>
-        public Texture2D Texture { get; set; }
+        public ITexture2D Texture { get; set; }
+        /// <summary>
+        /// Result .vox file contents
+        /// </summary>
+        public byte[] Vox { get; set; }
+    }
+
+    public abstract class RunResult<TTexture> where TTexture : class
+    {
+        /// <summary>
+        /// Result texture
+        /// </summary>
+        public TTexture Texture { get; set; }
         /// <summary>
         /// Result .vox file contents
         /// </summary>

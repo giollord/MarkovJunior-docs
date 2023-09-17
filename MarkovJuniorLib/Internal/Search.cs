@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-using Debug = UnityEngine.Debug;
+using Debug = MarkovJuniorLib.ToOverride.Debug;
 
 namespace MarkovJuniorLib.Internal
 {

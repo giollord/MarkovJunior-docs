@@ -1,12 +1,13 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using MarkovJuniorLib.ToOverride;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace MarkovJuniorLib
 {
     /// <summary>
     /// Configuration to run model
     /// </summary>
-    public class ModelConfig
+    public abstract class ModelConfig
     {
         /// <summary>
         /// XML of model to run. Required
@@ -63,11 +64,11 @@ namespace MarkovJuniorLib
         /// <summary>
         /// Optional initial texture provided to generator. Must contain only default and custom defined colors. Default is null
         /// </summary>
-        public Texture2D InitialTexture  = null;
+        internal abstract ITexture2D InitialTextureInternal { get; }
         /// <summary>
         /// Samples to use with "sample", "fin", "fout" and "file" attributes. Key is sample name, value is texture that must contain only default and custom defined colors. Default is empty dictionary
         /// </summary>
-        public Dictionary<string, Texture2D> Samples = new();
+        internal abstract Dictionary<string, ITexture2D> SamplesInternal { get; }
         /// <summary>
         /// Tileset and tiles XML configurations. Key is tileset name, value is tileset configuration XML. Key is tileset name or tile configuration in format "TILESETNAME/TILENAME", value is tileset or tile XML. Default is empty dictionary
         /// </summary>
@@ -76,5 +77,31 @@ namespace MarkovJuniorLib
         /// Contents of .vox files to use with "sample", "fin", "fout" and "file" attributes. Key is resource name, value is .vox file. Default is empty dictionary
         /// </summary>
         public Dictionary<string, byte[]> Resources = new();
+    }
+
+    public abstract class ModelConfig<TTexture> : ModelConfig where TTexture : class
+    {
+        private ITexture2D _initialTexture;
+        private Dictionary<string, ITexture2D> _samples;
+
+        /// <summary>
+        /// Optional initial texture provided to generator. Must contain only default and custom defined colors. Default is null
+        /// </summary>
+        public TTexture InitialTexture = null;
+        /// <summary>
+        /// Samples to use with "sample", "fin", "fout" and "file" attributes. Key is sample name, value is texture that must contain only default and custom defined colors. Default is empty dictionary
+        /// </summary>
+        public Dictionary<string, TTexture> Samples = new();
+
+        public void ResetCache()
+        {
+            _initialTexture = null;
+            _samples = null;
+        }
+
+        protected abstract ITexture2D ConvertTexture(TTexture tex);
+
+        internal override ITexture2D InitialTextureInternal => _initialTexture ??= ConvertTexture(InitialTexture);
+        internal override Dictionary<string, ITexture2D> SamplesInternal => _samples ??= Samples.ToDictionary(x => x.Key, x => ConvertTexture(x.Value));
     }
 }

@@ -3,8 +3,7 @@
 using System;
 using System.Xml.Linq;
 using System.Collections.Generic;
-
-using Debug = UnityEngine.Debug;
+using MarkovJuniorLib.ToOverride;
 
 namespace MarkovJuniorLib.Internal
 {

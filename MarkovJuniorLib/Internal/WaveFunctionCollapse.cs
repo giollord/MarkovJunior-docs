@@ -4,8 +4,8 @@ using System;
 using System.Xml.Linq;
 using System.Collections.Generic;
 
-using Debug = UnityEngine.Debug;
-using Mathf = UnityEngine.Mathf;
+using Debug = MarkovJuniorLib.ToOverride.Debug;
+using Mathf = MarkovJuniorLib.ToOverride.Mathf;
 
 namespace MarkovJuniorLib.Internal
 {
