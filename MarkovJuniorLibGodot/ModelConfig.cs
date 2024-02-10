@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace MarkovJuniorLibGodot
 {
-    public class ModelConfig : MarkovJuniorLib.InputConfig.ModelConfig<Image>
+    public class ModelConfig : MarkovJuniorLib.Models.ModelConfig<Image>
     {
         protected override MarkovJuniorLib.ToOverride.ITexture2D ConvertTexture(Image tex) => tex == null ? null : new GodotTexture2D(tex);
     }
@@ -20,21 +20,21 @@ namespace MarkovJuniorLibGodot
         public int Height => Texture.GetHeight();
         public int Width => Texture.GetWidth();
 
-        public MarkovJuniorLib.Color32[] GetPixels32()
+        public MarkovJuniorLib.Models.Color32[] GetPixels32()
         {
             var w = Width;
             var h = Height;
-            var result = new MarkovJuniorLib.Color32[w * h];
+            var result = new MarkovJuniorLib.Models.Color32[w * h];
             for (var x = 0; x < w; x++)
                 for (var y = 0; y < h; y++)
                 {
                     var c = Texture.GetPixel(x, h - y - 1);
-                    result[y * w + h] = new MarkovJuniorLib.Color32((byte)c.R8, (byte)c.G8, (byte)c.B8, (byte)c.A8);
+                    result[y * w + h] = new MarkovJuniorLib.Models.Color32((byte)c.R8, (byte)c.G8, (byte)c.B8, (byte)c.A8);
                 }
             return result;
         }
 
-        public void SetPixels32(MarkovJuniorLib.Color32[] pixels)
+        public void SetPixels32(MarkovJuniorLib.Models.Color32[] pixels)
         {
             var w = Width;
             var h = Height;

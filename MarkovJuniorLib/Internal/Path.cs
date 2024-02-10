@@ -6,7 +6,7 @@ using System.Xml.Linq;
 using System.Collections.Generic;
 
 using Mathf = MarkovJuniorLib.ToOverride.Mathf;
-using MarkovJuniorLib.InputConfig;
+using MarkovJuniorLib.Models;
 
 namespace MarkovJuniorLib.Internal
 {

@@ -1,10 +1,9 @@
 ﻿using System.Linq;
-using MarkovJuniorLib.InputConfig;
 using UnityEngine;
 
 namespace MarkovJuniorLibUnity
 {
-    public class ModelConfig : ModelConfig<Texture2D>
+    public class ModelConfig : MarkovJuniorLib.Models.ModelConfig<Texture2D>
     {
         protected override MarkovJuniorLib.ToOverride.ITexture2D ConvertTexture(Texture2D tex) => tex == null ? null : new UnityTexture2D(tex);
     }
@@ -21,9 +20,9 @@ namespace MarkovJuniorLibUnity
         public int Height => Texture.height;
         public int Width => Texture.width;
 
-        public MarkovJuniorLib.Color32[] GetPixels32() => Texture.GetPixels32().Select(x => new MarkovJuniorLib.Color32(x.r, x.g, x.b, x.a)).ToArray();
+        public MarkovJuniorLib.Models.Color32[] GetPixels32() => Texture.GetPixels32().Select(x => new MarkovJuniorLib.Models.Color32(x.r, x.g, x.b, x.a)).ToArray();
 
-        public void SetPixels32(MarkovJuniorLib.Color32[] pixels)
+        public void SetPixels32(MarkovJuniorLib.Models.Color32[] pixels)
         {
             Texture.SetPixels32(pixels.Select(x => new UnityEngine.Color32(x.R, x.G, x.B, x.A)).ToArray());
             Texture.Apply(false);

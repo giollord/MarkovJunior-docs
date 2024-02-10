@@ -1,4 +1,6 @@
-﻿namespace MarkovJuniorLib.ToOverride
+﻿using MarkovJuniorLib.Models;
+
+namespace MarkovJuniorLib.ToOverride
 {
     public interface ITexture2D
     {

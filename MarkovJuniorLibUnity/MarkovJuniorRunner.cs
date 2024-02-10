@@ -28,6 +28,6 @@ namespace MarkovJuniorLibUnity
             return res.Select(x => new RunResult { Texture = (x.Texture as UnityTexture2D).Texture, Vox = x.Vox });
         }
 
-        protected override UnityEngine.Color32 ConvertColor(MarkovJuniorLib.Color32 c) => new UnityEngine.Color32(c.R, c.G, c.B, c.A);
+        protected override UnityEngine.Color32 ConvertColor(MarkovJuniorLib.Models.Color32 c) => new UnityEngine.Color32(c.R, c.G, c.B, c.A);
     }
 }

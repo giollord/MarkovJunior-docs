@@ -1,4 +1,4 @@
-﻿namespace MarkovJuniorLib
+﻿namespace MarkovJuniorLib.Models
 {
     public struct Color32
     {

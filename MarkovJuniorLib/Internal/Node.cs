@@ -1,6 +1,6 @@
 ﻿// Copyright (C) 2022 Maxim Gumin, The MIT License (MIT)
 
-using MarkovJuniorLib.InputConfig;
+using MarkovJuniorLib.Models;
 using MarkovJuniorLib.ToOverride;
 using System.Linq;
 using System.Xml.Linq;

@@ -1,6 +1,6 @@
 ﻿using MarkovJuniorLib.ToOverride;
 
-namespace MarkovJuniorLib.InputConfig
+namespace MarkovJuniorLib.Models
 {
     public abstract class Resource
     {

@@ -3,6 +3,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using MarkovJuniorLib.Models;
 
 namespace MarkovJuniorLib.Internal
 {

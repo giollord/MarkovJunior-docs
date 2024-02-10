@@ -1,4 +1,4 @@
-﻿using MarkovJuniorLib.InputConfig;
+﻿using MarkovJuniorLib.Models;
 using MarkovJuniorLib.Internal;
 using MarkovJuniorLib.ToOverride;
 using System;

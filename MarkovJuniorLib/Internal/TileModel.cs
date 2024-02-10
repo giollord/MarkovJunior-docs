@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
-using MarkovJuniorLib.InputConfig;
+using MarkovJuniorLib.Models;
 
 namespace MarkovJuniorLib.Internal
 {

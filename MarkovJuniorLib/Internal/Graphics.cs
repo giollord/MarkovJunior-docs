@@ -1,5 +1,6 @@
 ﻿// Copyright (C) 2022 Maxim Gumin, The MIT License (MIT)
 
+using MarkovJuniorLib.Models;
 using MarkovJuniorLib.ToOverride;
 using System;
 //using System.Drawing;

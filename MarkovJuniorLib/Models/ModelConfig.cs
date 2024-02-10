@@ -3,7 +3,7 @@ using MarkovJuniorLib.ToOverride;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MarkovJuniorLib.InputConfig
+namespace MarkovJuniorLib.Models
 {
     /// <summary>
     /// Configuration to run model

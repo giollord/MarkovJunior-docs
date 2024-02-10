@@ -1,4 +1,4 @@
-﻿namespace MarkovJuniorLib.InputConfig
+﻿namespace MarkovJuniorLib.Models
 {
     public class ResourceColor32Grid : Resource
     {

@@ -1,4 +1,5 @@
-﻿using MarkovJuniorLib.ToOverride;
+﻿using MarkovJuniorLib.Models;
+using MarkovJuniorLib.ToOverride;
 
 namespace MarkovJuniorLib
 {
