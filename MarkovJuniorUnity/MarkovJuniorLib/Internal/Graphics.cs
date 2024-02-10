@@ -1,10 +1,11 @@
 ﻿// Copyright (C) 2022 Maxim Gumin, The MIT License (MIT)
 
+using MarkovJuniorLib.Models;
+using MarkovJuniorLib.ToOverride;
 using System;
 //using System.Drawing;
 //using System.Drawing.Imaging;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
 
 namespace MarkovJuniorLib.Internal
@@ -20,26 +21,44 @@ namespace MarkovJuniorLib.Internal
         /// (r, g, b) values.
         /// </summary>
         /// <returns>A tuple of (bitmap, width, height, 1), or <c>(null, -1, -1, -1)</c> if the loading fails.</returns>
-        public static (int[], int, int, int) LoadBitmap(Texture2D tex)
+        public static (int[], int, int, int) LoadBitmap(ITexture2D tex)
         {
             var pixels = tex.GetPixels32();
-            var res = tex.GetPixels32().Select(x => (x.a << 24) + (x.r << 16) + (x.g << 8) + (x.b)).ToArray();
-            var w = tex.width;
-            var h = tex.height;
+            var res = new int[pixels.Length];
+            var w = tex.Width;
+            var h = tex.Height;
             for (var i = 0; i < res.Length; i++)
             {
                 var pxI = (h - i / w - 1) * w + i % w;
                 var x = pixels[pxI];
-                res[i] = (x.a << 24) + (x.r << 16) + (x.g << 8) + (x.b);
+                res[i] = (x.A << 24) + (x.R << 16) + (x.G << 8) + (x.B);
             }
             return (res, w, h, 1);
         }
 
-        public static (int[], int, int, int) LoadBitmap(byte[] bytes)
+        public static (int[], int, int, int) LoadGrid(Color32[,,] tex)
         {
-            var tex = new Texture2D(2, 2);
-            ImageConversion.LoadImage(tex, bytes);
+            var w = tex.GetLength(0);
+            var h = tex.GetLength(1);
+            var d = tex.GetLength(2);
+            var res = new int[w * h * d];
+
+            for (int z = 0; z < d; z++) for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
+                    {
+                        int i = x + y * w + z * w * h;
+                        var c = tex[x, y, z];
+                        res[i] = (c.A << 24) + (c.R << 16) + (c.G << 8) + (c.B);
+                    }
+            return (res, w, h, d);
+        }
+
+        public static (int[], int, int, int) LoadBitmap(ITextureHelper textureHelper, byte[] bytes)
+        {
+            var tex = textureHelper.ParseFromFile(bytes);
             return LoadBitmap(tex);
+            //var tex = new Texture2D(2, 2);
+            //ImageConversion.LoadImage(tex, bytes);
+            //return LoadBitmap(tex);
         }
 
         /// <summary>
@@ -47,11 +66,11 @@ namespace MarkovJuniorLib.Internal
         /// ints; call <see cref="Graphics.Int(byte, byte, byte)">Graphics.Int</see>
         /// to pack the (r, g, b) values.
         /// </summary>
-        public static Texture2D SaveBitmap(int[] data, int width, int height)
+        public static ITexture2D SaveBitmap(ITextureHelper textureHelper, int[] data, int width, int height)
         {
             static byte GetColorComp(int val, int comp) => (byte)((val >> (comp * 8)) & 255);
 
-            var tex = new Texture2D(width, height);
+            var tex = textureHelper.Create(width, height);
             var colors = new Color32[data.Length];
             for (var i = 0; i < data.Length; i++)
             {
@@ -60,7 +79,7 @@ namespace MarkovJuniorLib.Internal
                 colors[pxI] = new Color32(GetColorComp(x, 2), GetColorComp(x, 1), GetColorComp(x, 0), GetColorComp(x, 3));
             }
             tex.SetPixels32(colors);
-            tex.Apply(false);
+            //tex.Apply(false);
             return tex;
         }
 

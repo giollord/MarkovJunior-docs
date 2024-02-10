@@ -4,8 +4,9 @@ using System;
 using System.Xml.Linq;
 using System.Collections.Generic;
 
-using Debug = UnityEngine.Debug;
-using Mathf = UnityEngine.Mathf;
+using Debug = MarkovJuniorLib.ToOverride.Debug;
+using Mathf = MarkovJuniorLib.ToOverride.Mathf;
+using MarkovJuniorLib.Models;
 
 namespace MarkovJuniorLib.Internal
 {
@@ -113,7 +114,7 @@ namespace MarkovJuniorLib.Internal
         /// <summary>The PRNG instance; it is separate from <see cref="Interpreter.random">the interpreter's</see>.</summary>
         Random random;
 
-        override protected bool Load(ModelConfig config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             shannon = xelem.Get("shannon", false);
             tries = xelem.Get("tries", 1000);

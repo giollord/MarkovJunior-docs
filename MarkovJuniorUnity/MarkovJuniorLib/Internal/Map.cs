@@ -2,6 +2,7 @@
 
 using System.Xml.Linq;
 using System.Collections.Generic;
+using MarkovJuniorLib.Models;
 
 namespace MarkovJuniorLib.Internal
 {
@@ -47,7 +48,7 @@ namespace MarkovJuniorLib.Internal
         /// <summary>The denominator of the z axis scale factor.</summary>
         int DZ;
 
-        override protected bool Load(ModelConfig config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             string scalestring = xelem.Get<string>("scale", null);
             if (scalestring == null)

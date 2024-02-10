@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using MarkovJuniorLib.Models;
 
 namespace MarkovJuniorLib.Internal
 {
@@ -27,7 +28,7 @@ namespace MarkovJuniorLib.Internal
         /// <summary>The amount that adjacent tiles overlap in the z direction.</summary>
         int overlapz;
 
-        override protected bool Load(ModelConfig config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             periodic = xelem.Get("periodic", false);
             /*string*/
@@ -45,7 +46,7 @@ namespace MarkovJuniorLib.Internal
             string firstFileName = $"{tilesname}/{xfirsttile.Get<string>("name")}";
             int[] firstData;
             int SY;
-            (firstData, S, SY, SZ) = VoxHelper.LoadVox(config.Resources[firstFileName]);
+            (firstData, S, SY, SZ) = VoxHelper.LoadVox(config.FileResources[firstFileName]);
             if (firstData == null)
             {
                 Interpreter.Error($"couldn't read {firstFileName}");
@@ -88,7 +89,7 @@ namespace MarkovJuniorLib.Internal
                 float weight = xtile.Get("weight", 1.0f);
 
                 string filename = $"{tilesname}/{tilename}";
-                int[] vox = VoxHelper.LoadVox(config.Resources[filename]).Item1;
+                int[] vox = VoxHelper.LoadVox(config.FileResources[filename]).Item1;
                 if (vox == null)
                 {
                     Interpreter.Error($"couldn't read tile {filename}");

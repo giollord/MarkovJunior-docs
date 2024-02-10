@@ -3,6 +3,7 @@
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using MarkovJuniorLib.Models;
 
 namespace MarkovJuniorLib.Internal
 {
@@ -198,14 +199,14 @@ namespace MarkovJuniorLib.Internal
             else return SymmetryHelper.CubeSymmetries(this, r => r.ZRotated(), r => r.YRotated(), r => r.Reflected(), Same, symmetry);
         }
 
-        public static (char[] data, int MX, int MY, int MZ) LoadResource(ModelConfig config, string name, string legend, bool d2)
+        public static (char[] data, int MX, int MY, int MZ) LoadResource(ModelConfigBase config, string name, string legend, bool d2)
         {
             if (legend == null)
             {
                 Interpreter.Error($"no legend for {name}");
                 return (null, -1, -1, -1);
             }
-            (int[] data, int MX, int MY, int MZ) = d2 ? Graphics.LoadBitmap(config.Samples[name]) : VoxHelper.LoadVox(config.Resources[name]);
+            (int[] data, int MX, int MY, int MZ) = d2 ? Graphics.LoadBitmap(config.Samples[name]) : VoxHelper.LoadVox(config.FileResources[name]);
             if (data == null)
             {
                 Interpreter.Error($"couldn't read {name}");
@@ -264,17 +265,9 @@ namespace MarkovJuniorLib.Internal
         /// <param name="xelem">The XML element.</param>
         /// <param name="gin">The grid which the input pattern will be matched against.</param>
         /// <param name="gout">The grid which the output pattern will be written to. This is usually the same as <c>gin</c>.</param>
-        public static Rule Load(ModelConfig config, XElement xelem, Grid gin, Grid gout)
+        public static Rule Load(ModelConfigBase config, XElement xelem, Grid gin, Grid gout)
         {
             int lineNumber = xelem.LineNumber();
-            string filepath(string name)
-            {
-                string result = "resources/rules/";
-                if (gout.folder != null) result += gout.folder + "/";
-                result += name;
-                result += gin.MZ == 1 ? ".png" : ".vox";
-                return result;
-            };
 
             string inString = xelem.Get<string>("in", null);
             string outString = xelem.Get<string>("out", null);

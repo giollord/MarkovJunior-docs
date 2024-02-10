@@ -1,9 +1,10 @@
-﻿using MarkovJuniorLib.Internal;
+﻿using MarkovJuniorLib.Models;
+using MarkovJuniorLib.Internal;
+using MarkovJuniorLib.ToOverride;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml.Linq;
-using UnityEngine;
 
 using Graphics = MarkovJuniorLib.Internal.Graphics;
 using GUI = MarkovJuniorLib.Internal.GUI;
@@ -13,13 +14,32 @@ namespace MarkovJuniorLib
     /// <summary>
     /// Entry point to run MarkovJunior algorithm
     /// </summary>
-    public static class MarkovJuniorRunner
+    public abstract class MarkovJuniorRunnerBase<TTexture, TColor, TModelConfig, TRunResult> where TTexture : class where TModelConfig : ModelConfigBase<TTexture> where TRunResult:RunResult<TTexture>
     {
+        /// <summary>
+        /// Run algorithm lazily, so results will be generated during enumeration
+        /// </summary>
+        /// <param name="modelConfig">Configuration</param>
+        /// <returns>Results of execution</returns>
+        /// <exception cref="Exception">Throws exception if something goes wrong</exception>
+        public abstract IEnumerable<TRunResult> Run(TModelConfig modelConfig);
+
         /// <summary>
         /// Get default pallette
         /// </summary>
         /// <returns>Dictionary with symbols and matching colors</returns>
-        public static Dictionary<char, Color32> GetDefaultPallette()
+        public Dictionary<char, TColor> GetDefaultPallette()
+        {
+            return GetDefaultPallettePrivate().ToDictionary(x => x.Key, x => ConvertColor(x.Value));
+        }
+
+        protected abstract TColor ConvertColor(Color32 c);
+
+        /// <summary>
+        /// Get default pallette
+        /// </summary>
+        /// <returns>Dictionary with symbols and matching colors</returns>
+        private Dictionary<char, Color32> GetDefaultPallettePrivate()
         {
             static byte GetColorComp(int val, int comp) => (byte)((val >> (comp * 8)) & 255);
 
@@ -40,9 +60,10 @@ namespace MarkovJuniorLib
         /// <param name="modelConfig">Configuration</param>
         /// <returns>Results of execution</returns>
         /// <exception cref="Exception">Throws exception if something goes wrong</exception>
-        public static IEnumerable<RunResult> Run(ModelConfig modelConfig)
+        protected IEnumerable<RunResult> Run(ModelConfigBase<TTexture> modelConfig, IRandom random, ITextureHelper textureHelper)
         {
             //Resources.palette
+            var gui = new GUI(textureHelper);
             using var palletteTextReader = new System.IO.StringReader(Constants.Pallette_XML);
             Dictionary<char, int> palette = XDocument.Load(palletteTextReader).Root.Elements("color").ToDictionary(x => x.Get<char>("symbol"), x => (255 << 24) + Convert.ToInt32(x.Get<string>("value"), 16));
 
@@ -56,17 +77,15 @@ namespace MarkovJuniorLib
             }
 
             Dictionary<char, int> customPalette = new(palette);
-            foreach (var x in modelConfig.Colors) customPalette[x.Symbol] = (x.Color.a << 24) + (x.Color.r << 16) + (x.Color.g << 8) + (x.Color.b);
+            foreach (var x in modelConfig.Colors) customPalette[x.Symbol] = (x.Color.A << 24) + (x.Color.R << 16) + (x.Color.G << 8) + (x.Color.B);
 
             byte[] initialState = null;
-            if(modelConfig.InitialTexture != null)
+            if(modelConfig.InitialGridInternal != null)
             {
-                if (modelConfig.InitialTexture.width != modelConfig.Width_MX || modelConfig.InitialTexture.height != modelConfig.Height_MY)
+                if (modelConfig.InitialGridInternal.GetLength(0) != modelConfig.Width_MX || modelConfig.InitialGridInternal.GetLength(1) != modelConfig.Height_MY || modelConfig.InitialGridInternal.GetLength(2) != modelConfig.Depth_MZ)
                     throw new Exception("Initial texture width and height must match MX and MY");
-                if (modelConfig.Depth_MZ != 1)
-                    throw new Exception("Initial texture can be only provided when MZ is 1");
 
-                var (initialColors, _, _, _) = Graphics.LoadBitmap(modelConfig.InitialTexture);
+                var (initialColors, _, _, _) = Graphics.LoadGrid(modelConfig.InitialGridInternal);
                 var colorIndexes = customPalette.ToDictionary(x => x.Value, x => (byte)Array.IndexOf(interpreter.grid.characters, x.Key));
                 initialState = new byte[initialColors.Length];
                 for (var i = 0; i < initialColors.Length; i++)
@@ -78,23 +97,31 @@ namespace MarkovJuniorLib
             var results = new List<RunResult>();
             for (int k = 0; k < modelConfig.Amount; k++)
             {
-                int seed = modelConfig.Seeds != null && k < modelConfig.Seeds.Length ? modelConfig.Seeds[k] : UnityEngine.Random.Range(0, int.MaxValue);
+                int seed = modelConfig.Seeds != null && k < modelConfig.Seeds.Length ? modelConfig.Seeds[k] : random.Range(0, int.MaxValue);
                 foreach ((byte[] result, char[] legend, int FX, int FY, int FZ) in interpreter.Run(seed, modelConfig.Steps, modelConfig.Gif, initialState))
                 {
                     int[] colors = legend.Select(ch => customPalette[ch]).ToArray();
+                    var runResult = new RunResult();
                     //string outputname = modelConfig.Gif ? $"output/{interpreter.counter}" : $"output/{modelConfig.Name}_{seed}";
-                    if (FZ == 1 || modelConfig.Iso)
+                    if (modelConfig.Output2dTexture && (FZ == 1 || modelConfig.Iso))
                     {
                         var (bitmap, WIDTH, HEIGHT) = Graphics.Render(result, FX, FY, FZ, colors, modelConfig.PixelSize, modelConfig.Gui);
-                        if (modelConfig.Gui > 0) GUI.Draw(modelConfig.Name, interpreter.root, interpreter.current, bitmap, WIDTH, HEIGHT, customPalette);
-                        var tex = Graphics.SaveBitmap(bitmap, WIDTH, HEIGHT);
-                        yield return new RunResult { Texture = tex };
+                        if (modelConfig.Gui > 0) gui.Draw(modelConfig.Name, interpreter.root, interpreter.current, bitmap, WIDTH, HEIGHT, customPalette);
+                        var tex = Graphics.SaveBitmap(textureHelper, bitmap, WIDTH, HEIGHT);
+                        runResult.Texture = tex;
                     }
-                    else
+                    if (modelConfig.Output3dVox)
                     {
                         var vox = VoxHelper.SaveVox(result, (byte)FX, (byte)FY, (byte)FZ, colors, null);
-                        yield return new RunResult { Vox = vox };
+                        runResult.Vox = vox;
                     }
+                    if (modelConfig.Output3dColors)
+                    {
+                        var out3dColors = VoxHelper.SaveColorsArray(result, FX, FY, FZ, colors);
+                        runResult.Output3d = out3dColors;
+                    }
+
+                    yield return runResult;
                 }
             }
         }

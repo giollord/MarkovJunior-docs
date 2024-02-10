@@ -5,7 +5,8 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
 
-using Mathf = UnityEngine.Mathf;
+using Mathf = MarkovJuniorLib.ToOverride.Mathf;
+using MarkovJuniorLib.Models;
 
 namespace MarkovJuniorLib.Internal
 {
@@ -50,7 +51,7 @@ namespace MarkovJuniorLib.Internal
         /// <summary>If <c>true</c>, paths may include diagonal steps in three dimensions.</summary>
         bool vertices;
 
-        override protected bool Load(ModelConfig config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             string startSymbols = xelem.Get<string>("from");
             start = grid.Wave(startSymbols);

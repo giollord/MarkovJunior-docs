@@ -34,6 +34,8 @@ Probably some other bugs
 
 You can find latest package in [releases](https://github.com/giollord/MarkovJunior-unity-lib/releases/latest).
 
+If you do not use Map Graph, just do not import folder `MapGraphExt` or remove it after import.
+
 ### Option 2 - copy-paste MarkovJuniorUnity folder
 
 Copy `MarkovJuniorUnity` folder to your project's `Assets` folder.

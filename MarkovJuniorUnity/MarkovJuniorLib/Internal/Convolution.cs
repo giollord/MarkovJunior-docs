@@ -3,6 +3,8 @@
 using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
+using MarkovJuniorLib.ToOverride;
+using MarkovJuniorLib.Models;
 
 namespace MarkovJuniorLib.Internal
 {
@@ -49,7 +51,7 @@ namespace MarkovJuniorLib.Internal
             ["NoCorners"] = new int[27] { 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0 },
         };
 
-        override protected bool Load(ModelConfig config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             XElement[] xrules = xelem.Elements("rule").ToArray();
             if (xrules.Length == 0) xrules = new[] { xelem };

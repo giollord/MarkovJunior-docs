@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace MarkovJuniorLib
+﻿namespace MarkovJuniorLib.Models
 {
     /// <summary>
     /// Custom color configuration

@@ -4,7 +4,8 @@ using System;
 using System.Xml.Linq;
 using System.Collections.Generic;
 
-using Mathf = UnityEngine.Mathf;
+using Mathf = MarkovJuniorLib.ToOverride.Mathf;
+using MarkovJuniorLib.Models;
 
 namespace MarkovJuniorLib.Internal
 {
@@ -14,7 +15,7 @@ namespace MarkovJuniorLib.Internal
     /// </summary>
     class OneNode : RuleNode
     {
-        override protected bool Load(ModelConfig config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             if (!base.Load(config, xelem, parentSymmetry, grid)) return false;
             matches = new List<(int, int, int, int)>();

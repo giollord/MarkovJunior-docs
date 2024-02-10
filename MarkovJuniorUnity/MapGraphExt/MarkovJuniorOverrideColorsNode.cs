@@ -1,7 +1,9 @@
 ﻿using InsaneScatterbrain.ScriptGraph;
-using MarkovJuniorLib;
+using MarkovJuniorLib.Models;
+using MarkovJuniorLibUnity;
 using System.Collections.Generic;
 using UnityEngine;
+using Color32 = UnityEngine.Color32;
 
 namespace MapGraphMarkovJunior
 {
@@ -74,7 +76,7 @@ namespace MapGraphMarkovJunior
                 return;
             list.Add(new ModelColor
             {
-                Color = port.Get<Color32>(),
+                Color = port.Get<Color32>().ToMarkovJuniorColor32(),
                 Symbol = colorSymbol
             });
         }

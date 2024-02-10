@@ -1,0 +1,21 @@
+{
+    "name": "MarkovJuniorUnity.MapGraph",
+    "rootNamespace": "",
+    "references": [
+        "GUID:a48ca14764a20a04fa5267e32cd607d1",
+        "GUID:521c972b06d4eb8e9a63c65d0121eabd",
+        "GUID:94a448d0f1a69befebd26b936f598ee6",
+        "GUID:069b8df3588bae0d48653135cce58021",
+        "GUID:52946711bbe5f0972ad5423a7b073ac8",
+        "GUID:1475219d9c538b60baf476697e09382b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

@@ -1,5 +1,6 @@
 ﻿using InsaneScatterbrain.ScriptGraph;
 using MarkovJuniorLib;
+using MarkovJuniorLibUnity;
 using UnityEngine;
 
 namespace MapGraphMarkovJunior
@@ -34,7 +35,7 @@ namespace MapGraphMarkovJunior
 
         protected override void OnProcess()
         {
-            var pallette = MarkovJuniorRunner.GetDefaultPallette();
+            var pallette = new MarkovJuniorRunner().GetDefaultPallette();
 
             black.Set(() => pallette['B']);
             indigo.Set(() => pallette['I']);

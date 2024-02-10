@@ -1,5 +1,7 @@
 ﻿// Copyright (C) 2022 Maxim Gumin, The MIT License (MIT)
 
+using MarkovJuniorLib.Models;
+using MarkovJuniorLib.ToOverride;
 using System;
 using System.Collections.Generic;
 
@@ -149,6 +151,23 @@ namespace MarkovJuniorLib.Internal
         /// Reflects a square pattern vertically, returning a new flat array.
         /// </summary>
         public static T[] Reflected<T>(T[] p, int N) => Pattern((x, y) => p[N - 1 - x + y * N], N);
+
+        public static Color32[,,] TextureToColor32Array(ITexture2D texture)
+        {
+            if (texture == null)
+                return null;
+
+            var result = new Color32[texture.Width, texture.Height, 1];
+            var pixels = texture.GetPixels32();
+            var width = texture.Width;
+            for (var y = 0; y < texture.Height; y++) for (var x = 0; x < width; x++)
+                {
+                    int i = x + y * width;
+                    result[x, y, 1] = pixels[i];
+
+                }
+            return result;
+        }
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 ﻿// Copyright (C) 2022 Maxim Gumin, The MIT License (MIT)
 
 using System.Xml.Linq;
+using MarkovJuniorLib.Models;
 
 namespace MarkovJuniorLib.Internal
 {
@@ -17,7 +18,7 @@ namespace MarkovJuniorLib.Internal
         /// </summary>
         byte[] newstate;
 
-        override protected bool Load(ModelConfig config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             if (!base.Load(config, xelem, parentSymmetry, grid)) return false;
             newstate = new byte[grid.state.Length];

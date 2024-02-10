@@ -1,6 +1,7 @@
 using InsaneScatterbrain.MapGraph;
 using InsaneScatterbrain.ScriptGraph;
-using MarkovJuniorLib;
+using MarkovJuniorLib.Models;
+using MarkovJuniorLibUnity;
 using System.Linq;
 using UnityEngine;
 
@@ -99,18 +100,18 @@ namespace MapGraphMarkovJunior
                 Seeds = seeds,
                 Width_MX = size.x,
                 Height_MY = size.y,
-                Samples = textureSamples,
+                Resources = textureSamples.Select(x => (key: x.Key, resource: Resource.Texture(new UnityTexture2D(x.Value)) as Resource))
+                    .ToDictionary(x => x.key, x => x.resource),
                 Colors = colorsOverride
             };
 
-            var result = MarkovJuniorRunner.Run(cfg).ToList();
+            var result = new MarkovJuniorRunner().Run(cfg).ToList();
 
             for (var i = 0; i < result.Count; i++)
             {
                 var tex = result[i].Texture;
                 var instanceProvider = Get<IInstanceProvider>();
                 var texData = instanceProvider.Get<TextureData>();
-                //var texData = new TextureData();
                 TextureData.CreateFromTexture(texData, tex);
                 resultNodes[i].Set(() => texData);
 
