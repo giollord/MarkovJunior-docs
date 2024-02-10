@@ -114,10 +114,10 @@ Demonstrates one of the coolest examples of MarkovJunior use - dungeon generatio
 
 Used texture import settings should follow the rules in section [Using asset textures](#Using-asset-textures)
 
-![Dungeon growth](/ReadmeImages/dungeon-growth.PNG)
+![Dungeon growth](/ReadmeImages/dungeon-growth.png)
 
 ### Sample 5
 Demonstrates how to use random seed from graph runner. XML is taken from [BlueNoise.xml](https://github.com/mxgmn/MarkovJunior/blob/main/models/BlueNoise.xml).
 
-![Dungeon growth](/ReadmeImages/blue-noise.PNG)
+![Dungeon growth](/ReadmeImages/blue-noise.png)
 
