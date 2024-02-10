@@ -28,7 +28,7 @@ namespace MarkovJuniorLib.Internal
         /// <summary>The amount that adjacent tiles overlap in the z direction.</summary>
         int overlapz;
 
-        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, NodeInfo parentNodeInfo, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             periodic = xelem.Get("periodic", false);
             /*string*/
@@ -295,7 +295,7 @@ namespace MarkovJuniorLib.Internal
                 }
             }
 
-            return base.Load(config, xelem, parentSymmetry, grid);
+            return base.Load(config, parentNodeInfo, xelem, parentSymmetry, grid);
         }
 
         protected override void UpdateState()

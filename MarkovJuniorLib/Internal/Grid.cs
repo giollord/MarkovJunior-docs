@@ -179,7 +179,7 @@ namespace MarkovJuniorLib.Internal
             int dz = 0, dy = 0, dx = 0;
             for (int di = 0; di < rule.input.Length; di++)
             {
-                if ((rule.input[di] & (1 << state[x + dx + (y + dy) * MX + (z + dz) * MX * MY])) == 0) return false;
+                if ((rule.input[di] & (1 << state[(x + dx) % MX + ((y + dy) % MY) * MX + ((z + dz) % MZ) * MX * MY])) == 0) return false;
 
                 dx++;
                 if (dx == rule.IMX)

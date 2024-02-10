@@ -28,6 +28,10 @@ namespace MarkovJuniorLib.Models
         /// </summary>
         public int Depth_MZ = 1;
         /// <summary>
+        /// If set to true, then "periodic" will be inherited from parents
+        /// </summary>
+        public bool InheritPeriodicFromParent = true;
+        /// <summary>
         /// Independent generator runs count. Default is 1
         /// </summary>
         public int Amount = 1;

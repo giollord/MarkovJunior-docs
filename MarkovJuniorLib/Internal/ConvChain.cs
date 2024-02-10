@@ -71,7 +71,7 @@ namespace MarkovJuniorLib.Internal
         /// <summary>The height of the sample image.</summary>
         public int SMY;
 
-        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] symmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, NodeInfo parentNodeInfo, XElement xelem, bool[] symmetry, Grid grid)
         {
             if (grid.MZ != 1)
             {

@@ -15,9 +15,9 @@ namespace MarkovJuniorLib.Internal
     /// </summary>
     class OneNode : RuleNode
     {
-        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, NodeInfo parentNodeInfo, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
-            if (!base.Load(config, xelem, parentSymmetry, grid)) return false;
+            if (!base.Load(config, parentNodeInfo, xelem, parentSymmetry, grid)) return false;
             matches = new List<(int, int, int, int)>();
             matchMask = AH.Array2D(rules.Length, grid.state.Length, false);
             return true;
@@ -39,7 +39,7 @@ namespace MarkovJuniorLib.Internal
         /// </summary>
         void Apply(Rule rule, int x, int y, int z)
         {
-            int MX = grid.MX, MY = grid.MY;
+            int MX = grid.MX, MY = grid.MY, MZ = grid.MZ;
             var changes = ip.changes;
 
             for (int dz = 0; dz < rule.OMZ; dz++) for (int dy = 0; dy < rule.OMY; dy++) for (int dx = 0; dx < rule.OMX; dx++)
@@ -47,9 +47,9 @@ namespace MarkovJuniorLib.Internal
                         byte newValue = rule.output[dx + dy * rule.OMX + dz * rule.OMX * rule.OMY];
                         if (newValue != 0xff)
                         {
-                            int sx = x + dx;
-                            int sy = y + dy;
-                            int sz = z + dz;
+                            int sx = (x + dx) % MX;
+                            int sy = (y + dy) % MY;
+                            int sz = (z + dz) % MZ;
                             int si = sx + sy * MX + sz * MX * MY;
                             byte oldValue = grid.state[si];
                             if (newValue != oldValue)
@@ -119,7 +119,7 @@ namespace MarkovJuniorLib.Internal
                     }
                     else
                     {
-                        float? heuristic = Field.DeltaPointwise(grid.state, rules[r], x, y, z, fields, potentials, grid.MX, grid.MY);
+                        float? heuristic = Field.DeltaPointwise(grid.state, rules[r], x, y, z, fields, potentials, grid.MX, grid.MY, grid.MZ);
                         if (heuristic == null) continue;
                         float h = (float)heuristic;
                         if (!firstHeuristicComputed)

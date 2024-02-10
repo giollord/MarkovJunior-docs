@@ -95,7 +95,7 @@ namespace MarkovJuniorLib.Internal
                 return null;
             }
 
-            Node topnode = Node.Factory(config, xelem, symmetry, ip, ip.grid);
+            Node topnode = Node.Factory(config, null, xelem, symmetry, ip, ip.grid);
             if (topnode == null) return null;
             ip.root = topnode is Branch ? topnode as Branch : new MarkovNode(topnode, ip);
 

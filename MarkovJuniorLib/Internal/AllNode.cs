@@ -16,9 +16,9 @@ namespace MarkovJuniorLib.Internal
     /// </summary>
     class AllNode : RuleNode
     {
-        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, NodeInfo parentNodeInfo, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
-            if (!base.Load(config, xelem, parentSymmetry, grid)) return false;
+            if (!base.Load(config, parentNodeInfo, xelem, parentSymmetry, grid)) return false;
             matches = new List<(int, int, int, int)>();
             matchMask = AH.Array2D(rules.Length, grid.state.Length, false);
             return true;
@@ -35,14 +35,15 @@ namespace MarkovJuniorLib.Internal
         /// <param name="newstate">A mask of which cells have been changed so far.</param>
         /// <param name="MX"><inheritdoc cref="Grid.MX" path="/summary"/></param>
         /// <param name="MY"><inheritdoc cref="Grid.MY" path="/summary"/></param>
-        void Fit(int r, int x, int y, int z, bool[] newstate, int MX, int MY)
+        /// <param name="MZ"><inheritdoc cref="Grid.MZ" path="/summary"/></param>
+        void Fit(int r, int x, int y, int z, bool[] newstate, int MX, int MY, int MZ)
         {
             Rule rule = rules[r];
             // check if the match overlaps with a previous one
             for (int dz = 0; dz < rule.OMZ; dz++) for (int dy = 0; dy < rule.OMY; dy++) for (int dx = 0; dx < rule.OMX; dx++)
                     {
                         byte value = rule.output[dx + dy * rule.OMX + dz * rule.OMX * rule.OMY];
-                        if (value != 0xff && newstate[x + dx + (y + dy) * MX + (z + dz) * MX * MY]) return;
+                        if (value != 0xff && newstate[(x + dx) % MX + ((y + dy) % MY) * MX + ((z + dz) % MZ) * MX * MY]) return;
                     }
             // apply the rewrite
             last[r] = true;
@@ -51,7 +52,7 @@ namespace MarkovJuniorLib.Internal
                         byte newvalue = rule.output[dx + dy * rule.OMX + dz * rule.OMX * rule.OMY];
                         if (newvalue != 0xff)
                         {
-                            int sx = x + dx, sy = y + dy, sz = z + dz;
+                            int sx = (x + dx) % MX, sy = (y + dy) % MY, sz = (z + dz) % MZ;
                             int i = sx + sy * MX + sz * MX * MY;
                             newstate[i] = true;
                             grid.state[i] = newvalue;
@@ -75,7 +76,7 @@ namespace MarkovJuniorLib.Internal
 
             if (matchCount == 0) return false;
 
-            int MX = grid.MX, MY = grid.MY;
+            int MX = grid.MX, MY = grid.MY, MZ = grid.MZ;
             if (potentials != null)
             {
                 float firstHeuristic = 0;
@@ -85,7 +86,7 @@ namespace MarkovJuniorLib.Internal
                 for (int m = 0; m < matchCount; m++)
                 {
                     var (r, x, y, z) = matches[m];
-                    float? heuristic = Field.DeltaPointwise(grid.state, rules[r], x, y, z, fields, potentials, grid.MX, grid.MY);
+                    float? heuristic = Field.DeltaPointwise(grid.state, rules[r], x, y, z, fields, potentials, grid.MX, grid.MY, grid.MZ);
                     if (heuristic != null)
                     {
                         float h = (float)heuristic;
@@ -103,7 +104,7 @@ namespace MarkovJuniorLib.Internal
                 {
                     var (r, x, y, z) = matches[ordered[k].Item1];
                     matchMask[r][x + y * MX + z * MX * MY] = false;
-                    Fit(r, x, y, z, grid.mask, MX, MY);
+                    Fit(r, x, y, z, grid.mask, MX, MY, MZ);
                 }
             }
             else
@@ -115,7 +116,7 @@ namespace MarkovJuniorLib.Internal
                 {
                     var (r, x, y, z) = matches[shuffle[k]];
                     matchMask[r][x + y * MX + z * MX * MY] = false;
-                    Fit(r, x, y, z, grid.mask, MX, MY);
+                    Fit(r, x, y, z, grid.mask, MX, MY, MZ);
                 }
             }
 

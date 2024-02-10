@@ -22,7 +22,7 @@ namespace MarkovJuniorLib.Internal
         /// <param name="symmetry">The parent node's symmetry group, which this node will inherit if it is not overridden.</param>
         /// <param name="grid"><inheritdoc cref="Node.grid" path="/summary"/></param>
         /// <returns><c>true</c> if the loading was successful, otherwise <c>false</c>.</returns>
-        abstract protected bool Load(ModelConfigBase config, XElement xelem, bool[] symmetry, Grid grid);
+        abstract protected bool Load(ModelConfigBase config, NodeInfo parentNodeInfo, XElement xelem, bool[] symmetry, Grid grid);
 
         /// <summary>
         /// Resets this node to its initial state.
@@ -49,7 +49,7 @@ namespace MarkovJuniorLib.Internal
         /// <param name="ip">The interpreter which will interpret the AST.</param>
         /// <param name="grid">The input grid for the new node.</param>
         /// <returns>The new AST node, or <c>null</c> if the loading fails.</returns>
-        public static Node Factory(ModelConfigBase config, XElement xelem, bool[] symmetry, Interpreter ip, Grid grid)
+        public static Node Factory(ModelConfigBase config, NodeInfo parentNodeInfo, XElement xelem, bool[] symmetry, Interpreter ip, Grid grid)
         {
             if (!nodenames.Contains(xelem.Name.LocalName))
             {
@@ -72,16 +72,24 @@ namespace MarkovJuniorLib.Internal
                 "wfc" when xelem.Get<string>("tileset", null) != null => new TileNode(),
                 _ => null
             };
+            result.NodeInfo = new NodeInfo
+            {
+                Node = result,
+                Parent = parentNodeInfo?.Node,
+                XElement = xelem
+            };
 
             result.ip = ip;
             result.grid = grid;
-            bool success = result.Load(config, xelem, symmetry, grid);
+            bool success = result.Load(config, parentNodeInfo, xelem, symmetry, grid);
 
             if (!success) return null;
             return result;
         }
 
         protected static string[] nodenames = new string[] { "one", "all", "prl", "markov", "sequence", "path", "map", "convolution", "convchain", "wfc" };
+
+        public NodeInfo NodeInfo { get; set; }
     }
 
     /// <summary>
@@ -101,7 +109,7 @@ namespace MarkovJuniorLib.Internal
         /// <summary>The index of the currently active child node. May be -1 if any preprocessing needs to be done.</summary>
         public int n;
 
-        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, NodeInfo parentNodeInfo, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             string symmetryString = xelem.Get<string>("symmetry", null);
             bool[] symmetry = SymmetryHelper.GetSymmetry(ip.grid.MZ == 1, symmetryString, parentSymmetry);
@@ -116,7 +124,7 @@ namespace MarkovJuniorLib.Internal
             for (int c = 0; c < xchildren.Length; c++)
             {
                 // if this is a MapNode which replaces the grid, then `grid` has already been changed before base.Load was called
-                var child = Factory(config, xchildren[c], symmetry, ip, grid);
+                var child = Factory(config, NodeInfo, xchildren[c], symmetry, ip, grid);
                 if (child == null) return false;
                 // MapNode/WFCNode not have parents; the program terminates when these nodes complete
                 if (child is Branch branch) branch.parent = branch is MapNode || branch is WFCNode ? null : this;

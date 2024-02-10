@@ -48,7 +48,7 @@ namespace MarkovJuniorLib.Internal
         /// <summary>The denominator of the z axis scale factor.</summary>
         int DZ;
 
-        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, NodeInfo parentNodeInfo, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             string scalestring = xelem.Get<string>("scale", null);
             if (scalestring == null)
@@ -82,7 +82,7 @@ namespace MarkovJuniorLib.Internal
             if (newgrid == null) return false;
 
             // base.Load expects `parentSymmetry`, not `symmetry`
-            if (!base.Load(config, xelem, parentSymmetry, newgrid)) return false;
+            if (!base.Load(config, parentNodeInfo, xelem, parentSymmetry, newgrid)) return false;
             bool[] symmetry = SymmetryHelper.GetSymmetry(grid.MZ == 1, xelem.Get<string>("symmetry", null), parentSymmetry);
 
             List<Rule> ruleList = new();

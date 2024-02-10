@@ -16,7 +16,7 @@ namespace MarkovJuniorLib.Internal
         /// <summary>The distinct patterns in this model, as flat N * N arrays of colors.</summary>
         byte[][] patterns;
 
-        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, NodeInfo parentNodeInfo, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             if (grid.MZ != 1)
             {
@@ -141,7 +141,7 @@ namespace MarkovJuniorLib.Internal
             }
             if (!map.ContainsKey(0)) map.Add(0, Enumerable.Repeat(true, P).ToArray());
 
-            return base.Load(config, xelem, parentSymmetry, grid);
+            return base.Load(config, parentNodeInfo, xelem, parentSymmetry, grid);
         }
 
         protected override void UpdateState()

@@ -80,11 +80,11 @@ namespace MarkovJuniorLib.Internal
         /// rules from the initial grid. A potential of -1 indicates that such a
         /// state cannot be reached.
         /// </summary>
-        public static void ComputeForwardPotentials(int[][] potentials, byte[] state, int MX, int MY, int MZ, Rule[] rules)
+        public static void ComputeForwardPotentials(int[][] potentials, byte[] state, int MX, int MY, int MZ, Rule[] rules, int periodicFlags)
         {
             potentials.Set2D(-1);
             for (int i = 0; i < state.Length; i++) potentials[state[i]][i] = 0;
-            ComputePotentials(potentials, MX, MY, MZ, rules, false);
+            ComputePotentials(potentials, MX, MY, MZ, rules, false, periodicFlags);
         }
 
         /// <summary>
@@ -95,20 +95,20 @@ namespace MarkovJuniorLib.Internal
         /// where the color <c>c</c> occurs at position (x, y, z). A potential of
         /// -1 indicates that the future cannot be reached from such a state.
         /// </summary>
-        public static void ComputeBackwardPotentials(int[][] potentials, int[] future, int MX, int MY, int MZ, Rule[] rules)
+        public static void ComputeBackwardPotentials(int[][] potentials, int[] future, int MX, int MY, int MZ, Rule[] rules, int periodicFlags)
         {
             for (int c = 0; c < potentials.Length; c++)
             {
                 int[] potential = potentials[c];
                 for (int i = 0; i < future.Length; i++) potential[i] = (future[i] & (1 << c)) != 0 ? 0 : -1;
             }
-            ComputePotentials(potentials, MX, MY, MZ, rules, true);
+            ComputePotentials(potentials, MX, MY, MZ, rules, true, periodicFlags);
         }
 
         /// <summary>
         /// Helper function for computing forward and backward potentials.
         /// </summary>
-        static void ComputePotentials(int[][] potentials, int MX, int MY, int MZ, Rule[] rules, bool backwards)
+        static void ComputePotentials(int[][] potentials, int MX, int MY, int MZ, Rule[] rules, bool backwards, int periodicFlags)
         {
             // compute the potentials by dynamic programming
             Queue<(byte c, int x, int y, int z)> queue = new();
@@ -116,7 +116,7 @@ namespace MarkovJuniorLib.Internal
             for (byte c = 0; c < potentials.Length; c++)
             {
                 int[] potential = potentials[c];
-                for (int i = 0; i < potential.Length; i++) if (potential[i] == 0) queue.Enqueue((c, i % MX, (i % (MX * MY)) / MX, i / (MX * MY)));
+                for (int i = 0; i < potential.Length; i++) if (potential[i] == 0) queue.Enqueue((c, i % MX, (i % (MX * MY)) / MX, (i / (MX * MY)) % MZ));
             }
 
             // buffer used to avoid applying the same rule in the same location more than once
@@ -140,12 +140,18 @@ namespace MarkovJuniorLib.Internal
                         int sy = y - shifty;
                         int sz = z - shiftz;
 
-                        if (sx < 0 || sy < 0 || sz < 0 || sx + rule.IMX > MX || sy + rule.IMY > MY || sz + rule.IMZ > MZ) continue;
+                        if ((periodicFlags & 1) != 0) sx = (sx + MX) % MX;
+                        else if (sx < 0 || sx + rule.IMX > MX) continue;
+                        if ((periodicFlags & 0b10) != 0) sy = (sy + MY) % MY;
+                        else if (sy < 0 || sy + rule.IMY > MY) continue;
+                        if ((periodicFlags & 0b100) != 0) sz = (sz + MZ) % MZ;
+                        else if (sz < 0 || sz + rule.IMZ > MZ) continue;
+
                         int si = sx + sy * MX + sz * MX * MY;
-                        if (!maskr[si] && ForwardMatches(rule, sx, sy, sz, potentials, t, MX, MY, backwards))
+                        if (!maskr[si] && ForwardMatches(rule, sx, sy, sz, potentials, t, MX, MY, MZ, backwards))
                         {
                             maskr[si] = true;
-                            ApplyForward(rule, sx, sy, sz, potentials, t, MX, MY, queue, backwards);
+                            ApplyForward(rule, sx, sy, sz, potentials, t, MX, MY, MZ, queue, backwards);
                         }
                     }
                 }
@@ -158,7 +164,7 @@ namespace MarkovJuniorLib.Internal
         /// may be possible, whereas <c>false</c> indicates that it is definitely
         /// not possible.
         /// </summary>
-        static bool ForwardMatches(Rule rule, int x, int y, int z, int[][] potentials, int t, int MX, int MY, bool backwards)
+        static bool ForwardMatches(Rule rule, int x, int y, int z, int[][] potentials, int t, int MX, int MY, int MZ, bool backwards)
         {
             int dz = 0, dy = 0, dx = 0;
             // unions in input patterns are not implemented yet
@@ -168,7 +174,7 @@ namespace MarkovJuniorLib.Internal
                 byte value = a[di];
                 if (value != 0xff)
                 {
-                    int current = potentials[value][x + dx + (y + dy) * MX + (z + dz) * MX * MY];
+                    int current = potentials[value][(x + dx) % MX + ((y + dy) % MY) * MX + ((z + dz) % MZ) * MX * MY];
                     if (current > t || current == -1) return false;
                 }
                 dx++;
@@ -186,7 +192,7 @@ namespace MarkovJuniorLib.Internal
         /// possibly-applicable at the given position after <c>t</c> steps,
         /// and enqueues any changed cells.
         /// </summary>
-        static void ApplyForward(Rule rule, int x, int y, int z, int[][] potentials, int t, int MX, int MY, Queue<(byte, int, int, int)> q, bool backwards)
+        static void ApplyForward(Rule rule, int x, int y, int z, int[][] potentials, int t, int MX, int MY, int MZ, Queue<(byte, int, int, int)> q, bool backwards)
         {
             // unions in input patterns are not implemented yet
             byte[] a = backwards ? rule.binput : rule.output;
@@ -199,7 +205,7 @@ namespace MarkovJuniorLib.Internal
                     for (int dx = 0; dx < rule.IMX; dx++)
                     {
                         int xdx = x + dx;
-                        int idi = xdx + ydy * MX + zdz * MX * MY;
+                        int idi = (xdx % MX) + (ydy % MY) * MX + (zdz % MZ) * MX * MY;
                         int di = dx + dy * rule.IMX + dz * rule.IMX * rule.IMY;
                         byte o = a[di];
                         // this is not the correct behaviour for a wildcard in the input pattern; not implemented yet

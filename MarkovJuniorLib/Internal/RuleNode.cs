@@ -162,7 +162,12 @@ namespace MarkovJuniorLib.Internal
         /// </summary>
         public bool[] last;
 
-        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        protected bool periodicX;
+        protected bool periodicY;
+        protected bool periodicZ;
+        protected int periodicFlags;
+
+        override protected bool Load(ModelConfigBase config, NodeInfo parentNodeInfo, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             string symmetryString = xelem.Get<string>("symmetry", null);
             bool[] symmetry = SymmetryHelper.GetSymmetry(grid.MZ == 1, symmetryString, parentSymmetry);
@@ -234,6 +239,48 @@ namespace MarkovJuniorLib.Internal
                 future = new int[grid.state.Length];
             }
 
+            var periodicString = xelem.Get<string>("periodic", null);
+            var periodicWasSet = false;
+            if (periodicString == null)
+            {
+                var parentInfo = parentNodeInfo;
+                while (parentInfo != null && parentInfo.Node != null)
+                {
+                    if (parentInfo.Node is RuleNode parentRuleNode)
+                    {
+                        periodicX = parentRuleNode.periodicX;
+                        periodicY = parentRuleNode.periodicY;
+                        periodicZ = parentRuleNode.periodicZ;
+                        periodicWasSet = true;
+                        break;
+                    }
+                    if (parentInfo.Node is SequenceNode || parentInfo.Node is MarkovNode || parentInfo.Node is MapNode)
+                    {
+                        periodicString = parentInfo.XElement.Get<string>("periodic", null);
+                        if (periodicString != null)
+                            break;
+                    }
+                    parentInfo = parentNodeInfo.Parent?.NodeInfo;
+                }
+            }
+
+            if (!periodicWasSet && periodicString != null)
+            {
+                if (bool.TryParse(periodicString, out var isPeriodic))
+                {
+                    periodicX = periodicY = periodicZ = isPeriodic;
+                    periodicFlags = 0b111;
+                }
+                else
+                {
+                    periodicString = periodicString.ToLowerInvariant();
+                    periodicX = periodicString.Contains('x');
+                    periodicY = periodicString.Contains('y');
+                    periodicZ = periodicString.Contains('z');
+                    periodicFlags = (periodicX ? 1 : 0) | (periodicY ? 0b10 : 0) | (periodicZ ? 0b100 : 0);
+                }
+            }
+
             return true;
         }
 
@@ -287,13 +334,13 @@ namespace MarkovJuniorLib.Internal
                         // compute a trajectory by A* search; if successful, the trajectory states will be successively copied to the grid
                         trajectory = null;
                         int TRIES = limit < 0 ? 1 : 20;
-                        for (int k = 0; k < TRIES && trajectory == null; k++) trajectory = Search.Run(grid.state, future, rules, grid.MX, grid.MY, grid.MZ, grid.C, this is AllNode, limit, depthCoefficient, ip.random.Next());
+                        for (int k = 0; k < TRIES && trajectory == null; k++) trajectory = Search.Run(grid.state, future, rules, grid.MX, grid.MY, grid.MZ, grid.C, this is AllNode, limit, depthCoefficient, ip.random.Next(), periodicFlags);
                         if (trajectory == null) Debug.Log("SEARCH RETURNED NULL");
                     }
                     else
                     {
                         // otherwise compute potentials to bias application of rewrite rules towards the future goal
-                        Observation.ComputeBackwardPotentials(potentials, future, MX, MY, MZ, rules);
+                        Observation.ComputeBackwardPotentials(potentials, future, MX, MY, MZ, rules, periodicFlags);
                     }
                 }
             }
@@ -318,7 +365,13 @@ namespace MarkovJuniorLib.Internal
                             int sy = y - shifty;
                             int sz = z - shiftz;
 
-                            if (sx < 0 || sy < 0 || sz < 0 || sx + rule.IMX > MX || sy + rule.IMY > MY || sz + rule.IMZ > MZ) continue;
+                            if (periodicX) sx = (sx + MX) % MX;
+                            else if (sx < 0 || sx + rule.IMX > MX) continue;
+                            if (periodicY) sy = (sy + MY) % MY;
+                            else if (sy < 0 || sy + rule.IMY > MY) continue;
+                            if (periodicZ) sz = (sz + MZ) % MZ;
+                            else if (sz < 0 || sz + rule.IMZ > MZ) continue;
+
                             int si = sx + sy * MX + sz * MX * MY;
 
                             // maskr is used to avoid adding the match if it has already been added
@@ -335,20 +388,29 @@ namespace MarkovJuniorLib.Internal
                 {
                     Rule rule = rules[r];
                     bool[] maskr = matchMask?[r];
+                    var maxX = MX + (periodicX ? rule.IMX : 0);
+                    var maxY = MY + (periodicY ? rule.IMY : 0);
+                    var maxZ = MZ + (periodicZ ? rule.IMZ : 0);
                     // look at lattice points spaced (IMX, IMY, IMZ) apart
-                    for (int z = rule.IMZ - 1; z < MZ; z += rule.IMZ)
-                        for (int y = rule.IMY - 1; y < MY; y += rule.IMY)
-                            for (int x = rule.IMX - 1; x < MX; x += rule.IMX)
+                    for (int z = rule.IMZ - 1; z < maxZ; z += rule.IMZ)
+                        for (int y = rule.IMY - 1; y < maxY; y += rule.IMY)
+                            for (int x = rule.IMX - 1; x < maxX; x += rule.IMX)
                             {
                                 // use ishifts to find matches near lattice points
-                                var shifts = rule.ishifts[grid.state[x + y * MX + z * MX * MY]];
+                                var shifts = rule.ishifts[grid.state[x % MX + (y % MY) * MX + (z % MZ) * MX * MY]];
                                 for (int l = 0; l < shifts.Length; l++)
                                 {
                                     var (shiftx, shifty, shiftz) = shifts[l];
                                     int sx = x - shiftx;
                                     int sy = y - shifty;
                                     int sz = z - shiftz;
-                                    if (sx < 0 || sy < 0 || sz < 0 || sx + rule.IMX > MX || sy + rule.IMY > MY || sz + rule.IMZ > MZ) continue;
+
+                                    if (periodicX) sx = (sx + MX) % MX;
+                                    else if (sx < 0 || sx + rule.IMX > MX) continue;
+                                    if (periodicY) sy = (sy + MY) % MY;
+                                    else if (sy < 0 || sy + rule.IMY > MY) continue;
+                                    if (periodicZ) sz = (sz + MZ) % MZ;
+                                    else if (sz < 0 || sz + rule.IMZ > MZ) continue;
 
                                     if (grid.Matches(rule, sx, sy, sz)) Add(r, sx, sy, sz, maskr);
                                 }
@@ -365,7 +427,7 @@ namespace MarkovJuniorLib.Internal
                     Field field = fields[c];
                     if (field != null && (counter == 0 || field.recompute))
                     {
-                        bool success = field.Compute(potentials[c], grid);
+                        bool success = field.Compute(potentials[c], grid, periodicFlags);
                         if (!success && field.essential) return false;
                         anysuccess |= success;
                         anycomputation = true;

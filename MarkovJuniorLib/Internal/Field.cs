@@ -73,7 +73,7 @@ namespace MarkovJuniorLib.Internal
         /// <param name="potential">The array which the distance field potentials will be written to.</param>
         /// <param name="grid">The grid state for which the distance field will be computed.</param>
         /// <returns><c>true</c> if the grid has any 'zeroes', otherwise <c>false</c>.</returns>
-        public bool Compute(int[] potential, Grid grid)
+        public bool Compute(int[] potential, Grid grid, int periodicFlags)
         {
             // compute the distance field by breadth-first search
             int MX = grid.MX, MY = grid.MY, MZ = grid.MZ;
@@ -106,7 +106,7 @@ namespace MarkovJuniorLib.Internal
             while (front.Any())
             {
                 var (t, x, y, z) = front.Dequeue();
-                var neighbors = Neighbors(x, y, z, MX, MY, MZ);
+                var neighbors = Neighbors(x, y, z, MX, MY, MZ, periodicFlags);
                 for (int n = 0; n < neighbors.Count; n++)
                 {
                     var (nx, ny, nz) = neighbors[n];
@@ -126,16 +126,20 @@ namespace MarkovJuniorLib.Internal
         /// <summary>
         /// Returns a list of the orthogonal neighbours of the cell (x, y, z).
         /// </summary>
-        static List<(int, int, int)> Neighbors(int x, int y, int z, int MX, int MY, int MZ)
+        static List<(int, int, int)> Neighbors(int x, int y, int z, int MX, int MY, int MZ, int periodicFlags)
         {
             List<(int, int, int)> result = new();
 
-            if (x > 0) result.Add((x - 1, y, z));
-            if (x < MX - 1) result.Add((x + 1, y, z));
-            if (y > 0) result.Add((x, y - 1, z));
-            if (y < MY - 1) result.Add((x, y + 1, z));
-            if (z > 0) result.Add((x, y, z - 1));
-            if (z < MZ - 1) result.Add((x, y, z + 1));
+            var periodicX = (periodicFlags & 1) != 0;
+            var periodicY = (periodicFlags & 0b10) != 0;
+            var periodicZ = (periodicFlags & 0b100) != 0;
+
+            if (x > 0 || periodicX) result.Add(((x + MX - 1) % MX, y, z));
+            if (x < MX - 1 || periodicX) result.Add(((x + 1) % MX, y, z));
+            if (y > 0 || periodicY) result.Add((x, (y + MY - 1) % MY, z));
+            if (y < MY - 1 || periodicY) result.Add((x, (y + 1) % MY, z));
+            if (z > 0 || periodicZ) result.Add((x, y, (z + MZ - 1) % MZ));
+            if (z < MZ - 1 || periodicZ) result.Add((x, y, (z + 1) % MZ));
 
             return result;
         }
@@ -146,7 +150,7 @@ namespace MarkovJuniorLib.Internal
         /// value is equivalent to an infinite increase in 'score', indicating that
         /// this rule should not be applied at this position.
         /// </summary>
-        public static int? DeltaPointwise(byte[] state, Rule rule, int x, int y, int z, Field[] fields, int[][] potentials, int MX, int MY)
+        public static int? DeltaPointwise(byte[] state, Rule rule, int x, int y, int z, Field[] fields, int[][] potentials, int MX, int MY, int MZ)
         {
             int sum = 0;
             int dz = 0, dy = 0, dx = 0;
@@ -156,7 +160,7 @@ namespace MarkovJuniorLib.Internal
                 // check if this change to the grid would break the match
                 if (newValue != 0xff && (rule.input[di] & 1 << newValue) == 0)
                 {
-                    int i = x + dx + (y + dy) * MX + (z + dz) * MX * MY;
+                    int i = (x + dx) % MX + ((y + dy) % MY) * MX + ((z + dz) % MZ) * MX * MY;
                     int newPotential = potentials[newValue][i];
                     if (newPotential == -1) return null;
 

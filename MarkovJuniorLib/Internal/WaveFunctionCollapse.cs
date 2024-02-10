@@ -114,7 +114,7 @@ namespace MarkovJuniorLib.Internal
         /// <summary>The PRNG instance; it is separate from <see cref="Interpreter.random">the interpreter's</see>.</summary>
         Random random;
 
-        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, NodeInfo parentNodeInfo, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             shannon = xelem.Get("shannon", false);
             tries = xelem.Get("tries", 1000);
@@ -140,7 +140,7 @@ namespace MarkovJuniorLib.Internal
             }
 
             distribution = new float[P];
-            return base.Load(config, xelem, parentSymmetry, newgrid);
+            return base.Load(config, parentNodeInfo, xelem, parentSymmetry, newgrid);
         }
 
         override public void Reset()

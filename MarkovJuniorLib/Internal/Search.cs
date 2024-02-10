@@ -31,7 +31,7 @@ namespace MarkovJuniorLib.Internal
         /// <param name="depthCoefficient"><inheritdoc cref="RuleNode.depthCoefficient" path="/summary"/></param>
         /// <param name="seed">A seed for the PRNG used by the search algorithm.</param>
         /// <returns>The trajectory as an array of grid states, or <c>null</c> if no trajectory is found. The present state is not included in the trajectory.</returns>
-        public static byte[][] Run(byte[] present, int[] future, Rule[] rules, int MX, int MY, int MZ, int C, bool all, int limit, float depthCoefficient, int seed)
+        public static byte[][] Run(byte[] present, int[] future, Rule[] rules, int MX, int MY, int MZ, int C, bool all, int limit, float depthCoefficient, int seed, int periodicFlags)
         {
             //Console.WriteLine("START SEARCH");
             //present.Print(MX, MY);
@@ -40,9 +40,9 @@ namespace MarkovJuniorLib.Internal
             int[][] bpotentials = AH.Array2D(C, present.Length, -1);
             int[][] fpotentials = AH.Array2D(C, present.Length, -1);
 
-            Observation.ComputeBackwardPotentials(bpotentials, future, MX, MY, MZ, rules);
+            Observation.ComputeBackwardPotentials(bpotentials, future, MX, MY, MZ, rules, periodicFlags);
             int rootBackwardEstimate = Observation.BackwardPointwise(bpotentials, present);
-            Observation.ComputeForwardPotentials(fpotentials, present, MX, MY, MZ, rules);
+            Observation.ComputeForwardPotentials(fpotentials, present, MX, MY, MZ, rules, periodicFlags);
             int rootForwardEstimate = Observation.ForwardPointwise(fpotentials, future);
 
             // if either of these estimates are -1 then the goal is definitely not reachable
@@ -81,7 +81,7 @@ namespace MarkovJuniorLib.Internal
                 //Console.WriteLine($"extracting board at depth {parentBoard.depth} and estimate ({parentBoard.backwardEstimate}, {parentBoard.forwardEstimate}):");
                 //parentBoard.state.Print(MX, MY);
 
-                var children = all ? parentBoard.state.AllChildStates(MX, MY, rules) : parentBoard.state.OneChildStates(MX, MY, rules);
+                var children = all ? parentBoard.state.AllChildStates(MX, MY, rules, periodicFlags) : parentBoard.state.OneChildStates(MX, MY, rules, periodicFlags);
                 //Console.WriteLine($"this board has {children.Length} children");
                 foreach (var childState in children)
                 //for (int c = 0; c < children.Length; c++)
@@ -110,7 +110,7 @@ namespace MarkovJuniorLib.Internal
                     {
                         // this state hasn't been considered before
                         int childBackwardEstimate = Observation.BackwardPointwise(bpotentials, childState);
-                        Observation.ComputeForwardPotentials(fpotentials, childState, MX, MY, MZ, rules);
+                        Observation.ComputeForwardPotentials(fpotentials, childState, MX, MY, MZ, rules, periodicFlags);
                         int childForwardEstimate = Observation.ForwardPointwise(fpotentials, future);
 
                         //Console.WriteLine($"child {c} has estimate ({childBackwardEstimate}, {childForwardEstimate}):");
@@ -151,12 +151,12 @@ namespace MarkovJuniorLib.Internal
         /// Returns a list of the states which can be reached from this state in
         /// one step by executing a 'one' node with the given rules.
         /// </summary>
-        static List<byte[]> OneChildStates(this byte[] state, int MX, int MY, Rule[] rules)
+        static List<byte[]> OneChildStates(this byte[] state, int MX, int MY, Rule[] rules, int periodicFlags)
         {
             List<byte[]> result = new();
             foreach (Rule rule in rules)
                 for (int y = 0; y < MY; y++) for (int x = 0; x < MX; x++)
-                        if (Matches(rule, x, y, state, MX, MY)) result.Add(Applied(rule, x, y, state, MX));
+                        if (Matches(rule, x, y, state, MX, MY, periodicFlags)) result.Add(Applied(rule, x, y, state, MX, MY));
             return result;
         }
 
@@ -164,16 +164,16 @@ namespace MarkovJuniorLib.Internal
         /// Determines whether this rule matches at position (x, y) in the given
         /// grid state.
         /// </summary>
-        static bool Matches(this Rule rule, int x, int y, byte[] state, int MX, int MY)
+        static bool Matches(this Rule rule, int x, int y, byte[] state, int MX, int MY, int periodicFlags)
         {
-            if (x + rule.IMX > MX || y + rule.IMY > MY) return false;
+            if ((x + rule.IMX > MX && (periodicFlags & 1) == 0) || (y + rule.IMY > MY && (periodicFlags & 0b10) == 0)) return false;
 
             int dy = 0, dx = 0;
             // попробовать binput, но в этот раз здесь тоже заменить!
             // try binput, but this time replace here too!
             for (int di = 0; di < rule.input.Length; di++)
             {
-                if ((rule.input[di] & (1 << state[x + dx + (y + dy) * MX])) == 0) return false;
+                if ((rule.input[di] & (1 << state[(x + dx) % MX + ((y + dy) % MY) * MX])) == 0) return false;
                 dx++;
                 if (dx == rule.IMX) { dx = 0; dy++; }
             }
@@ -184,14 +184,14 @@ namespace MarkovJuniorLib.Internal
         /// Returns a new state in which the given rule has been applied at
         /// position (x, y).
         /// </summary>
-        static byte[] Applied(Rule rule, int x, int y, byte[] state, int MX)
+        static byte[] Applied(Rule rule, int x, int y, byte[] state, int MX, int MY)
         {
             byte[] result = new byte[state.Length];
             Array.Copy(state, result, state.Length);
             for (int dz = 0; dz < rule.OMZ; dz++) for (int dy = 0; dy < rule.OMY; dy++) for (int dx = 0; dx < rule.OMX; dx++)
                     {
                         byte newValue = rule.output[dx + dy * rule.OMX + dz * rule.OMX * rule.OMY];
-                        if (newValue != 0xff) result[x + dx + (y + dy) * MX] = newValue;
+                        if (newValue != 0xff) result[(x + dx) % MX + ((y + dy) % MY) * MX] = newValue;
                     }
             return result;
         }
@@ -231,7 +231,7 @@ namespace MarkovJuniorLib.Internal
         /// Returns a list of the states which can be reached from this state in
         /// one step by executing an 'all' node with the given rules.
         /// </summary>
-        public static List<byte[]> AllChildStates(this byte[] state, int MX, int MY, Rule[] rules)
+        public static List<byte[]> AllChildStates(this byte[] state, int MX, int MY, Rule[] rules, int periodicFlags)
         {
             var list = new List<(Rule, int)>();
             int[] amounts = new int[state.Length];
@@ -241,10 +241,10 @@ namespace MarkovJuniorLib.Internal
                 for (int r = 0; r < rules.Length; r++)
                 {
                     Rule rule = rules[r];
-                    if (rule.Matches(x, y, state, MX, MY))
+                    if (rule.Matches(x, y, state, MX, MY, periodicFlags))
                     {
                         list.Add((rule, i));
-                        for (int dy = 0; dy < rule.IMY; dy++) for (int dx = 0; dx < rule.IMX; dx++) amounts[x + dx + (y + dy) * MX]++;
+                        for (int dy = 0; dy < rule.IMY; dy++) for (int dx = 0; dx < rule.IMX; dx++) amounts[(x + dx) % MX + ((y + dy) % MY) * MX]++;
                     }
                 }
             }
@@ -253,7 +253,7 @@ namespace MarkovJuniorLib.Internal
             List<(Rule, int)> solution = new();
 
             List<byte[]> result = new();
-            Enumerate(result, solution, tiles, amounts, mask, state, MX);
+            Enumerate(result, solution, tiles, amounts, mask, state, MX, MY);
             return result;
         }
 
@@ -268,13 +268,13 @@ namespace MarkovJuniorLib.Internal
         /// <param name="mask">An array of flags for each match in <c>tiles</c> indicating whether it is available or hidden.</param>
         /// <param name="state">The current grid state.</param>
         /// <param name="MX"><inheritdoc cref="Grid.MX" path="/summary"/></param>
-        static void Enumerate(List<byte[]> children, List<(Rule, int)> solution, (Rule, int)[] tiles, int[] amounts, bool[] mask, byte[] state, int MX)
+        static void Enumerate(List<byte[]> children, List<(Rule, int)> solution, (Rule, int)[] tiles, int[] amounts, bool[] mask, byte[] state, int MX, int MY)
         {
             int I = amounts.MaxPositiveIndex();
             int X = I % MX, Y = I / MX;
             if (I < 0)
             {
-                children.Add(state.Apply(solution, MX));
+                children.Add(state.Apply(solution, MX, MY));
                 return;
             }
 
@@ -299,9 +299,9 @@ namespace MarkovJuniorLib.Internal
                     }
 
                 // recurse
-                foreach (int l in intersecting) Hide(l, false, tiles, amounts, mask, MX);
-                Enumerate(children, solution, tiles, amounts, mask, state, MX);
-                foreach (int l in intersecting) Hide(l, true, tiles, amounts, mask, MX);
+                foreach (int l in intersecting) Hide(l, false, tiles, amounts, mask, MX, MY);
+                Enumerate(children, solution, tiles, amounts, mask, state, MX, MY);
+                foreach (int l in intersecting) Hide(l, true, tiles, amounts, mask, MX, MY);
 
                 // backtrack
                 solution.RemoveAt(solution.Count - 1);
@@ -313,24 +313,24 @@ namespace MarkovJuniorLib.Internal
         /// hide or unhide the rule match at index <c>l</c>. Hidden matches cannot
         /// be added to the current partial solution.
         /// </summary>
-        static void Hide(int l, bool unhide, (Rule, int)[] tiles, int[] amounts, bool[] mask, int MX)
+        static void Hide(int l, bool unhide, (Rule, int)[] tiles, int[] amounts, bool[] mask, int MX, int MY)
         {
             mask[l] = unhide;
             var (rule, i) = tiles[l];
             int x = i % MX, y = i / MX;
             int incr = unhide ? 1 : -1;
-            for (int dy = 0; dy < rule.IMY; dy++) for (int dx = 0; dx < rule.IMX; dx++) amounts[x + dx + (y + dy) * MX] += incr;
+            for (int dy = 0; dy < rule.IMY; dy++) for (int dx = 0; dx < rule.IMX; dx++) amounts[(x + dx) % MX + ((y + dy) % MY) * MX] += incr;
         }
 
         /// <summary>
         /// Applies a rule at the given position in the grid state, in-place.
         /// </summary>
-        static void Apply(this Rule rule, int x, int y, byte[] state, int MX)
+        static void Apply(this Rule rule, int x, int y, byte[] state, int MX, int MY)
         {
             for (int dy = 0; dy < rule.OMY; dy++) for (int dx = 0; dx < rule.OMX; dx++)
                 {
                     byte c = rule.output[dx + dy * rule.OMX];
-                    if (c != 0xff) state[x + dx + (y + dy) * MX] = c;
+                    if (c != 0xff) state[(x + dx) % MX + ((y + dy) % MY) * MX] = c;
                 }
         }
 
@@ -338,11 +338,11 @@ namespace MarkovJuniorLib.Internal
         /// Applies a set of non-overlapping rule matches to this grid state,
         /// returning a new grid state.
         /// </summary>
-        static byte[] Apply(this byte[] state, List<(Rule, int)> solution, int MX)
+        static byte[] Apply(this byte[] state, List<(Rule, int)> solution, int MX, int MY)
         {
             byte[] result = new byte[state.Length];
             Array.Copy(state, result, state.Length);
-            foreach (var (rule, i) in solution) Apply(rule, i % MX, i / MX, result, MX);
+            foreach (var (rule, i) in solution) Apply(rule, i % MX, i / MX, result, MX, MY);
             return result;
         }
     }
