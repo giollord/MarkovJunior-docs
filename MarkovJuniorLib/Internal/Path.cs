@@ -51,7 +51,7 @@ namespace MarkovJuniorLib.Internal
         /// <summary>If <c>true</c>, paths may include diagonal steps in three dimensions.</summary>
         bool vertices;
 
-        override protected bool Load(ModelConfig config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             string startSymbols = xelem.Get<string>("from");
             start = grid.Wave(startSymbols);

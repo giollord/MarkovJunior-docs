@@ -14,7 +14,7 @@ namespace MarkovJuniorLib
     /// <summary>
     /// Entry point to run MarkovJunior algorithm
     /// </summary>
-    public abstract class MarkovJuniorRunner<TTexture, TColor, TModelConfig, TRunResult> where TTexture : class where TModelConfig : ModelConfig<TTexture> where TRunResult:RunResult<TTexture>
+    public abstract class MarkovJuniorRunnerBase<TTexture, TColor, TModelConfig, TRunResult> where TTexture : class where TModelConfig : ModelConfigBase<TTexture> where TRunResult:RunResult<TTexture>
     {
         /// <summary>
         /// Run algorithm lazily, so results will be generated during enumeration
@@ -60,7 +60,7 @@ namespace MarkovJuniorLib
         /// <param name="modelConfig">Configuration</param>
         /// <returns>Results of execution</returns>
         /// <exception cref="Exception">Throws exception if something goes wrong</exception>
-        protected IEnumerable<RunResult> Run(ModelConfig<TTexture> modelConfig, IRandom random, ITextureHelper textureHelper)
+        protected IEnumerable<RunResult> Run(ModelConfigBase<TTexture> modelConfig, IRandom random, ITextureHelper textureHelper)
         {
             //Resources.palette
             var gui = new GUI(textureHelper);

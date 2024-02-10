@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace MarkovJuniorLibGodot
 {
-    public class ModelConfig : MarkovJuniorLib.Models.ModelConfig<Image>
+    public class ModelConfig : MarkovJuniorLib.Models.ModelConfigBase<Image>
     {
         protected override MarkovJuniorLib.ToOverride.ITexture2D ConvertTexture(Image tex) => tex == null ? null : new GodotTexture2D(tex);
     }

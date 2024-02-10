@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace MarkovJuniorLibUnity
 {
-    public class ModelConfig : MarkovJuniorLib.Models.ModelConfig<Texture2D>
+    public class ModelConfig : MarkovJuniorLib.Models.ModelConfigBase<Texture2D>
     {
         protected override MarkovJuniorLib.ToOverride.ITexture2D ConvertTexture(Texture2D tex) => tex == null ? null : new UnityTexture2D(tex);
     }

@@ -3,7 +3,7 @@ using MarkovJuniorLib;
 
 namespace MarkovJuniorLibGodot
 {
-    public class MarkovJuniorRunner : MarkovJuniorRunner<Image, Color, ModelConfig, RunResult>
+    public class MarkovJuniorRunner : MarkovJuniorRunnerBase<Image, Color, ModelConfig, RunResult>
     {
         private GodotRandom _random;
         private GodotTextureHelper _texHelper;

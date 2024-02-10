@@ -8,7 +8,8 @@ namespace MarkovJuniorLib.Models
     /// <summary>
     /// Configuration to run model
     /// </summary>
-    public abstract class ModelConfig
+    public abstract class ModelConfigBase
+
     {
         /// <summary>
         /// XML of model to run. Required
@@ -94,7 +95,7 @@ namespace MarkovJuniorLib.Models
         internal abstract Dictionary<string, Color32[,,]> Grids { get; }
     }
 
-    public abstract class ModelConfig<TTexture> : ModelConfig where TTexture : class
+    public abstract class ModelConfigBase<TTexture> : ModelConfigBase where TTexture : class
     {
         private Color32[,,] _initialGrid;
         private Dictionary<string, ITexture2D> _samples;

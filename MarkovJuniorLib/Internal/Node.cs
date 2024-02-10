@@ -22,7 +22,7 @@ namespace MarkovJuniorLib.Internal
         /// <param name="symmetry">The parent node's symmetry group, which this node will inherit if it is not overridden.</param>
         /// <param name="grid"><inheritdoc cref="Node.grid" path="/summary"/></param>
         /// <returns><c>true</c> if the loading was successful, otherwise <c>false</c>.</returns>
-        abstract protected bool Load(ModelConfig config, XElement xelem, bool[] symmetry, Grid grid);
+        abstract protected bool Load(ModelConfigBase config, XElement xelem, bool[] symmetry, Grid grid);
 
         /// <summary>
         /// Resets this node to its initial state.
@@ -49,7 +49,7 @@ namespace MarkovJuniorLib.Internal
         /// <param name="ip">The interpreter which will interpret the AST.</param>
         /// <param name="grid">The input grid for the new node.</param>
         /// <returns>The new AST node, or <c>null</c> if the loading fails.</returns>
-        public static Node Factory(ModelConfig config, XElement xelem, bool[] symmetry, Interpreter ip, Grid grid)
+        public static Node Factory(ModelConfigBase config, XElement xelem, bool[] symmetry, Interpreter ip, Grid grid)
         {
             if (!nodenames.Contains(xelem.Name.LocalName))
             {
@@ -101,7 +101,7 @@ namespace MarkovJuniorLib.Internal
         /// <summary>The index of the currently active child node. May be -1 if any preprocessing needs to be done.</summary>
         public int n;
 
-        override protected bool Load(ModelConfig config, XElement xelem, bool[] parentSymmetry, Grid grid)
+        override protected bool Load(ModelConfigBase config, XElement xelem, bool[] parentSymmetry, Grid grid)
         {
             string symmetryString = xelem.Get<string>("symmetry", null);
             bool[] symmetry = SymmetryHelper.GetSymmetry(ip.grid.MZ == 1, symmetryString, parentSymmetry);

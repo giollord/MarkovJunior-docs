@@ -199,7 +199,7 @@ namespace MarkovJuniorLib.Internal
             else return SymmetryHelper.CubeSymmetries(this, r => r.ZRotated(), r => r.YRotated(), r => r.Reflected(), Same, symmetry);
         }
 
-        public static (char[] data, int MX, int MY, int MZ) LoadResource(ModelConfig config, string name, string legend, bool d2)
+        public static (char[] data, int MX, int MY, int MZ) LoadResource(ModelConfigBase config, string name, string legend, bool d2)
         {
             if (legend == null)
             {
@@ -265,7 +265,7 @@ namespace MarkovJuniorLib.Internal
         /// <param name="xelem">The XML element.</param>
         /// <param name="gin">The grid which the input pattern will be matched against.</param>
         /// <param name="gout">The grid which the output pattern will be written to. This is usually the same as <c>gin</c>.</param>
-        public static Rule Load(ModelConfig config, XElement xelem, Grid gin, Grid gout)
+        public static Rule Load(ModelConfigBase config, XElement xelem, Grid gin, Grid gout)
         {
             int lineNumber = xelem.LineNumber();
             string filepath(string name)

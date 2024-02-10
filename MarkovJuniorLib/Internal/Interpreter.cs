@@ -75,7 +75,7 @@ namespace MarkovJuniorLib.Internal
         /// <param name="MX"><inheritdoc cref="Grid.MX" path="/summary"/></param>
         /// <param name="MY"><inheritdoc cref="Grid.MY" path="/summary"/></param>
         /// <param name="MZ"><inheritdoc cref="Grid.MZ" path="/summary"/></param>
-        public static Interpreter Load(ModelConfig config, XElement xelem, int MX, int MY, int MZ)
+        public static Interpreter Load(ModelConfigBase config, XElement xelem, int MX, int MY, int MZ)
         {
             Interpreter ip = new();
             ip.origin = xelem.Get("origin", false);

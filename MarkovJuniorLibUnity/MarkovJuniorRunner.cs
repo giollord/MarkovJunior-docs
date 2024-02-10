@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace MarkovJuniorLibUnity
 {
-    public class MarkovJuniorRunner : MarkovJuniorRunner<Texture2D, UnityEngine.Color32, ModelConfig, RunResult>
+    public class MarkovJuniorRunner : MarkovJuniorRunnerBase<Texture2D, UnityEngine.Color32, ModelConfig, RunResult>
     {
         private UnityRandom _random;
         private UnityTextureHelper _texHelper;
