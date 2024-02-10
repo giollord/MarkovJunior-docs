@@ -268,14 +268,6 @@ namespace MarkovJuniorLib.Internal
         public static Rule Load(ModelConfigBase config, XElement xelem, Grid gin, Grid gout)
         {
             int lineNumber = xelem.LineNumber();
-            string filepath(string name)
-            {
-                string result = "resources/rules/";
-                if (gout.folder != null) result += gout.folder + "/";
-                result += name;
-                result += gin.MZ == 1 ? ".png" : ".vox";
-                return result;
-            };
 
             string inString = xelem.Get<string>("in", null);
             string outString = xelem.Get<string>("out", null);

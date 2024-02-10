@@ -9,6 +9,6 @@ namespace MarkovJuniorLib.Models
             Texture = texture;
         }
 
-        public ITexture2D Texture { get; set; }
+        public new ITexture2D Texture { get; set; }
     }
 }

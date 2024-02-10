@@ -7,6 +7,6 @@
             TilesetXml = tilesetXml;
         }
 
-        public string TilesetXml { get; set; }
+        public new string TilesetXml { get; set; }
     }
 }

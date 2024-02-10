@@ -23,7 +23,7 @@ namespace MarkovJuniorLibGodot
         public override IEnumerable<RunResult> Run(ModelConfig modelConfig)
         {
             var res = Run(modelConfig, _random, _texHelper);
-            return res.Select(x => new RunResult { Texture = (x.Texture as GodotTexture2D).Texture, Vox = x.Vox });
+            return res.Select(x => new RunResult { Texture = (x.Texture as GodotTexture2D)!.Texture, Vox = x.Vox });
         }
 
         protected override Color ConvertColor(MarkovJuniorLib.Models.Color32 c) => new Color((uint)((c.R << 24) | (c.G << 16) | (c.B << 8) | (c.A)));

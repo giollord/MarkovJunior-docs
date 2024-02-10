@@ -7,6 +7,6 @@
             Vox = vox;
         }
 
-        public byte[] Vox { get; set; }
+        public new byte[] Vox { get; set; }
     }
 }
