@@ -77,13 +77,17 @@ In order to use MarkovJunior-unity-lib with asset textures (like in [Example 3](
 4. Compression is set to None
 ![Texture requirements](/ReadmeImages/texture-requirements.png)
 
-### Example 1
+## Samples
+These samples require [Map Graph](https://assetstore.unity.com/packages/tools/utilities/map-graph-177023) asset. Samples are included with unitypackage in [releases](https://github.com/giollord/MarkovJunior-unity-lib/releases/latest).
+
+### Sample 1
 Basic example
 
 ![Cave sample](/ReadmeImages/cave.PNG)
 
-### Example 2
+### Sample 2
 Input image is generated using default colors with Map Graph and then passed to MarkovJunior runner.
+Also black color 'B' is overridden with dark magenta.
 
 In this example used modified [voronoi.xml](https://github.com/mxgmn/MarkovJunior/blob/main/models/Voronoi.xml)
 
@@ -98,9 +102,22 @@ In this example used modified [voronoi.xml](https://github.com/mxgmn/MarkovJunio
 
 ![Initial texture](/ReadmeImages/initial-texture.PNG)
 
-### Example 3
+### Sample 3
 Demonstrates how to use texture sample named "Flowers" in WFC node. XML is taken from [WaveFlowers.xml](https://github.com/mxgmn/MarkovJunior/blob/main/models/WaveFlowers.xml), image taken from [Flowers.png](https://github.com/mxgmn/MarkovJunior/blob/main/resources/samples/Flowers.png).
 
 Used texture import settings should follow the rules in section [Using asset textures](#Using-asset-textures)
 
 ![Flowers](/ReadmeImages/flowers.PNG)
+
+### Sample 4
+Demonstrates one of the coolest examples of MarkovJunior use - dungeon generation. XML is taken from [DungeonGrowth.xml](https://github.com/mxgmn/MarkovJunior/blob/main/models/DungeonGrowth.xml), images are taken from [DungeonGrowth](https://github.com/mxgmn/MarkovJunior/tree/main/resources/rules/DungeonGrowth).
+
+Used texture import settings should follow the rules in section [Using asset textures](#Using-asset-textures)
+
+![Dungeon growth](/ReadmeImages/dungeon-growth.PNG)
+
+### Sample 5
+Demonstrates how to use random seed from graph runner. XML is taken from [BlueNoise.xml](https://github.com/mxgmn/MarkovJunior/blob/main/models/BlueNoise.xml).
+
+![Dungeon growth](/ReadmeImages/blue-noise.PNG)
+

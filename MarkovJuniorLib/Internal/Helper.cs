@@ -163,7 +163,7 @@ namespace MarkovJuniorLib.Internal
             for (var y = 0; y < texture.Height; y++) for (var x = 0; x < width; x++)
                 {
                     int i = x + y * width;
-                    result[x, y, 1] = pixels[i];
+                    result[x, y, 0] = pixels[i];
 
                 }
             return result;
