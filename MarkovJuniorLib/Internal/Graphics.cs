@@ -23,7 +23,7 @@ namespace MarkovJuniorLib.Internal
         public static (int[], int, int, int) LoadBitmap(ITexture2D tex)
         {
             var pixels = tex.GetPixels32();
-            var res = tex.GetPixels32().Select(x => (x.A << 24) + (x.R << 16) + (x.G << 8) + (x.B)).ToArray();
+            var res = new int[pixels.Length];
             var w = tex.Width;
             var h = tex.Height;
             for (var i = 0; i < res.Length; i++)
@@ -33,6 +33,22 @@ namespace MarkovJuniorLib.Internal
                 res[i] = (x.A << 24) + (x.R << 16) + (x.G << 8) + (x.B);
             }
             return (res, w, h, 1);
+        }
+
+        public static (int[], int, int, int) LoadGrid(Color32[,,] tex)
+        {
+            var w = tex.GetLength(0);
+            var h = tex.GetLength(1);
+            var d = tex.GetLength(2);
+            var res = new int[w * h * d];
+
+            for (int z = 0; z < d; z++) for (int y = 0; y < h; y++) for (int x = 0; x < w; x++)
+                    {
+                        int i = x + y * w + z * w * h;
+                        var c = tex[x, y, z];
+                        res[i] = (c.A << 24) + (c.R << 16) + (c.G << 8) + (c.B);
+                    }
+            return (res, w, h, d);
         }
 
         public static (int[], int, int, int) LoadBitmap(ITextureHelper textureHelper, byte[] bytes)

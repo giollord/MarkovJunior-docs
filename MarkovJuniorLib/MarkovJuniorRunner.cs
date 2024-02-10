@@ -80,14 +80,12 @@ namespace MarkovJuniorLib
             foreach (var x in modelConfig.Colors) customPalette[x.Symbol] = (x.Color.A << 24) + (x.Color.R << 16) + (x.Color.G << 8) + (x.Color.B);
 
             byte[] initialState = null;
-            if(modelConfig.InitialTextureInternal != null)
+            if(modelConfig.InitialGridInternal != null)
             {
-                if (modelConfig.InitialTextureInternal.Width != modelConfig.Width_MX || modelConfig.InitialTextureInternal.Height != modelConfig.Height_MY)
+                if (modelConfig.InitialGridInternal.GetLength(0) != modelConfig.Width_MX || modelConfig.InitialGridInternal.GetLength(1) != modelConfig.Height_MY || modelConfig.InitialGridInternal.GetLength(2) != modelConfig.Depth_MZ)
                     throw new Exception("Initial texture width and height must match MX and MY");
-                if (modelConfig.Depth_MZ != 1)
-                    throw new Exception("Initial texture can be only provided when MZ is 1");
 
-                var (initialColors, _, _, _) = Graphics.LoadBitmap(modelConfig.InitialTextureInternal);
+                var (initialColors, _, _, _) = Graphics.LoadGrid(modelConfig.InitialGridInternal);
                 var colorIndexes = customPalette.ToDictionary(x => x.Value, x => (byte)Array.IndexOf(interpreter.grid.characters, x.Key));
                 initialState = new byte[initialColors.Length];
                 for (var i = 0; i < initialColors.Length; i++)
@@ -105,7 +103,7 @@ namespace MarkovJuniorLib
                     int[] colors = legend.Select(ch => customPalette[ch]).ToArray();
                     var runResult = new RunResult();
                     //string outputname = modelConfig.Gif ? $"output/{interpreter.counter}" : $"output/{modelConfig.Name}_{seed}";
-                    if (FZ == 1 || modelConfig.Iso)
+                    if (modelConfig.Output2dTexture && (FZ == 1 || modelConfig.Iso))
                     {
                         var (bitmap, WIDTH, HEIGHT) = Graphics.Render(result, FX, FY, FZ, colors, modelConfig.PixelSize, modelConfig.Gui);
                         if (modelConfig.Gui > 0) gui.Draw(modelConfig.Name, interpreter.root, interpreter.current, bitmap, WIDTH, HEIGHT, customPalette);

@@ -46,7 +46,7 @@ namespace MarkovJuniorLib.Internal
             string firstFileName = $"{tilesname}/{xfirsttile.Get<string>("name")}";
             int[] firstData;
             int SY;
-            (firstData, S, SY, SZ) = VoxHelper.LoadVox(config.Resources[firstFileName]);
+            (firstData, S, SY, SZ) = VoxHelper.LoadVox(config.FileResources[firstFileName]);
             if (firstData == null)
             {
                 Interpreter.Error($"couldn't read {firstFileName}");
@@ -89,7 +89,7 @@ namespace MarkovJuniorLib.Internal
                 float weight = xtile.Get("weight", 1.0f);
 
                 string filename = $"{tilesname}/{tilename}";
-                int[] vox = VoxHelper.LoadVox(config.Resources[filename]).Item1;
+                int[] vox = VoxHelper.LoadVox(config.FileResources[filename]).Item1;
                 if (vox == null)
                 {
                     Interpreter.Error($"couldn't read tile {filename}");

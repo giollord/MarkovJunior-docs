@@ -81,7 +81,7 @@ namespace MarkovJuniorLib.Internal
 
             string name = xelem.Get<string>("sample");
             int[] bitmap;
-            (bitmap, SMX, SMY, _) = Graphics.LoadBitmap(config.SamplesInternal[name]);
+            (bitmap, SMX, SMY, _) = Graphics.LoadBitmap(config.Samples[name]);
             if (bitmap == null)
             {
                 return false;

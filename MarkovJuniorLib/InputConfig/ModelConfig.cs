@@ -47,6 +47,10 @@ namespace MarkovJuniorLib.InputConfig
         /// </summary>
         public bool Iso = false;
         /// <summary>
+        /// If set to true, then output will contain 2d texture if Depth_MZ is set to 1
+        /// </summary>
+        public bool Output2dTexture = true;
+        /// <summary>
         /// If set to true, then output will be encoded as .vox file
         /// </summary>
         public bool Output3dVox = false;
@@ -71,50 +75,58 @@ namespace MarkovJuniorLib.InputConfig
         /// </summary>
         public ModelColor[] Colors = new ModelColor[0];
         /// <summary>
-        /// Optional initial texture provided to generator. Must contain only default and custom defined colors. Default is null
+        /// Optional initial grid provided to generator. Must contain only default and custom defined colors. Default is null
         /// </summary>
-        internal abstract ITexture2D InitialTextureInternal { get; }
         internal abstract Color32[,,] InitialGridInternal { get; }
-        /// <summary>
-        /// Samples to use with "sample", "fin", "fout" and "file" attributes. Key is sample name, value is texture that must contain only default and custom defined colors. Default is empty dictionary
-        /// </summary>
-        internal abstract Dictionary<string, ITexture2D> SamplesInternal { get; }
-        /// <summary>
-        /// Tileset and tiles XML configurations. Key is tileset name, value is tileset configuration XML. Key is tileset name or tile configuration in format "TILESETNAME/TILENAME", value is tileset or tile XML. Default is empty dictionary
-        /// </summary>
-        public Dictionary<string, string> TilesetXmls = new();
-        /// <summary>
-        /// Contents of .vox files to use with "sample", "fin", "fout" and "file" attributes. Key is resource name, value is .vox file. Default is empty dictionary
-        /// </summary>
-        public Dictionary<string, byte[]> Resources = new();
-        public Dictionary<string, Resource> Res22 = new();
+        ///// <summary>
+        ///// Tileset and tiles XML configurations. Key is tileset name, value is tileset configuration XML. Key is tileset name or tile configuration in format "TILESETNAME/TILENAME", value is tileset or tile XML. Default is empty dictionary
+        ///// </summary>
+        //public Dictionary<string, string> TilesetXmls = new();
+        ///// <summary>
+        ///// Contents of .vox files to use with "sample", "fin", "fout" and "file" attributes. Key is resource name, value is .vox file. Default is empty dictionary
+        ///// </summary>
+        //public Dictionary<string, byte[]> Resources = new();
+        public Dictionary<string, Resource> Resources = new();
+
+        internal abstract Dictionary<string, string> TilesetXmls { get; }
+        internal abstract Dictionary<string, byte[]> FileResources { get; }
+        internal abstract Dictionary<string, ITexture2D> Samples { get; }
+        internal abstract Dictionary<string, Color32[,,]> Grids { get; }
     }
 
     public abstract class ModelConfig<TTexture> : ModelConfig where TTexture : class
     {
-        private ITexture2D _initialTexture;
         private Color32[,,] _initialGrid;
         private Dictionary<string, ITexture2D> _samples;
+        private Dictionary<string, byte[]> _fileResources;
+        private Dictionary<string, string> _tilesets;
+        private Dictionary<string, Color32[,,]> _grids;
 
         /// <summary>
-        /// Optional initial texture provided to generator. Must contain only default and custom defined colors. Default is null
+        /// Optional initial texture provided to generator. Must contain only default and custom defined colors. Default is null. Ignored if InitialGrid is set
         /// </summary>
         public TTexture InitialTexture = null;
         /// <summary>
-        /// Samples to use with "sample", "fin", "fout" and "file" attributes. Key is sample name, value is texture that must contain only default and custom defined colors. Default is empty dictionary
+        /// Optional initial grid provided to generator. Must contain only default and custom defined colors. Default is null
         /// </summary>
-        public Dictionary<string, TTexture> Samples = new();
+        public Color32[,,] InitialGrid = null;
 
         public void ResetCache()
         {
             _initialGrid = null;
             _samples = null;
+            _fileResources = null;
+            _tilesets = null;
+            _grids = null;
         }
 
         protected abstract ITexture2D ConvertTexture(TTexture tex);
 
-        internal override ITexture2D InitialTextureInternal => _initialTexture ??= ConvertTexture(InitialTexture);
-        internal override Color32[,,] InitialGridInternal => _initialGrid ??= Helper.TextureToColor32Array(ConvertTexture(InitialTexture));
-        internal override Dictionary<string, ITexture2D> SamplesInternal => _samples ??= Samples.ToDictionary(x => x.Key, x => ConvertTexture(x.Value));
+
+        internal override Color32[,,] InitialGridInternal => _initialGrid ??= InitialGrid ?? Helper.TextureToColor32Array(ConvertTexture(InitialTexture));
+        internal override Dictionary<string, string> TilesetXmls => _tilesets ??= Resources.Where(x => x.Value is ResourceTilesetXml).ToDictionary(x => x.Key, x => (x.Value as ResourceTilesetXml)!.TilesetXml);
+        internal override Dictionary<string, byte[]> FileResources => _fileResources ??= Resources.Where(x => x.Value is ResourceVoxBytes).ToDictionary(x => x.Key, x => (x.Value as ResourceVoxBytes)!.Vox);
+        internal override Dictionary<string, ITexture2D> Samples => _samples ??= Resources.Where(x => x.Value is ResourceTexture).ToDictionary(x => x.Key, x => (x.Value as ResourceTexture)!.Texture);
+        internal override Dictionary<string, Color32[,,]> Grids => _grids ??= Resources.Where(x => x.Value is ResourceColor32Grid).ToDictionary(x => x.Key, x => (x.Value as ResourceColor32Grid)!.ColorsGrid);
     }
 }
