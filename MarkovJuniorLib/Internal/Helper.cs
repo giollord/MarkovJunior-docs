@@ -154,6 +154,9 @@ namespace MarkovJuniorLib.Internal
 
         public static Color32[,,] TextureToColor32Array(ITexture2D texture)
         {
+            if (texture == null)
+                return null;
+
             var result = new Color32[texture.Width, texture.Height, 1];
             var pixels = texture.GetPixels32();
             var width = texture.Width;

@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace MarkovJuniorLibUnity
 {
-    public class MarkovJuniorRunner : MarkovJuniorRunnerBase<Texture2D, UnityEngine.Color32, ModelConfig, RunResult>
+    public class MarkovJuniorRunner : MarkovJuniorRunnerBase<Texture2D, Color32, ModelConfig, RunResult>
     {
         private UnityRandom _random;
         private UnityTextureHelper _texHelper;
@@ -28,6 +28,6 @@ namespace MarkovJuniorLibUnity
             return res.Select(x => new RunResult { Texture = (x.Texture as UnityTexture2D).Texture, Vox = x.Vox });
         }
 
-        protected override UnityEngine.Color32 ConvertColor(MarkovJuniorLib.Models.Color32 c) => new UnityEngine.Color32(c.R, c.G, c.B, c.A);
+        protected override Color32 ConvertColor(MarkovJuniorLib.Models.Color32 c) => c.ToUnityColor32();
     }
 }
