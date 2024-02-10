@@ -5,6 +5,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Collections.Generic;
 using MarkovJuniorLib.ToOverride;
+using MarkovJuniorLib.InputConfig;
 
 namespace MarkovJuniorLib.Internal
 {

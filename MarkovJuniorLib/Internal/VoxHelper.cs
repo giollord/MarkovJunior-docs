@@ -153,5 +153,36 @@ namespace MarkovJuniorLib.Internal
             var bytes = memoryStream.ToArray();
             return bytes;
         }
+
+        /// <summary>
+        /// Saves a 3D grid state as array of colors Color32[x,y,z]
+        /// </summary>
+        public static Color32[,,] SaveColorsArray(byte[] state, int MX, int MY, int MZ, int[] palette)
+        {
+            static byte GetColorComp(int val, int comp) => (byte)((val >> (comp * 8)) & 255);
+
+            var result = new Color32[MX, MY, MZ];
+            for (int z = 0; z < MZ; z++) for (int y = 0; y < MY; y++) for (int x = 0; x < MX; x++)
+                    {
+                        int i = x + y * MX + z * MX * MY;
+                        int c = palette[state[i]];
+                        result[x, y, z] = new Color32(GetColorComp(c, 2), GetColorComp(c, 1), GetColorComp(c, 0), GetColorComp(c, 3));
+                    }
+            return result;
+        }
+
+        /// <summary>
+        /// Saves a 3D grid state as array of integer representations of colors int[x,y,z]
+        /// </summary>
+        public static int[,,] SavePaletteArray(byte[] state, int MX, int MY, int MZ, int[] palette)
+        {
+            var result = new int[MX, MY, MZ];
+            for (int z = 0; z < MZ; z++) for (int y = 0; y < MY; y++) for (int x = 0; x < MX; x++)
+                    {
+                        int i = x + y * MX + z * MX * MY;
+                        result[x, y, z] = palette[state[i]];
+                    }
+            return result;
+        }
     }
 }

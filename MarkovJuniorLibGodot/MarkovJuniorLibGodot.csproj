@@ -15,56 +15,20 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="..\MarkovJuniorLib\Color32.cs" Link="MarkovJuniorLib\Color32.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\AllNode.cs" Link="MarkovJuniorLib\Internal\AllNode.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\ArrayHelper.cs" Link="MarkovJuniorLib\Internal\ArrayHelper.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\Constants.cs" Link="MarkovJuniorLib\Internal\Constants.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\ConvChain.cs" Link="MarkovJuniorLib\Internal\ConvChain.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\Convolution.cs" Link="MarkovJuniorLib\Internal\Convolution.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\ExtensionMethods.cs" Link="MarkovJuniorLib\Internal\ExtensionMethods.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\Field.cs" Link="MarkovJuniorLib\Internal\Field.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\Graphics.cs" Link="MarkovJuniorLib\Internal\Graphics.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\Grid.cs" Link="MarkovJuniorLib\Internal\Grid.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\GUI.cs" Link="MarkovJuniorLib\Internal\GUI.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\Helper.cs" Link="MarkovJuniorLib\Internal\Helper.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\Interpreter.cs" Link="MarkovJuniorLib\Internal\Interpreter.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\Map.cs" Link="MarkovJuniorLib\Internal\Map.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\Node.cs" Link="MarkovJuniorLib\Internal\Node.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\Observation.cs" Link="MarkovJuniorLib\Internal\Observation.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\OneNode.cs" Link="MarkovJuniorLib\Internal\OneNode.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\OverlapModel.cs" Link="MarkovJuniorLib\Internal\OverlapModel.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\ParallelNode.cs" Link="MarkovJuniorLib\Internal\ParallelNode.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\Path.cs" Link="MarkovJuniorLib\Internal\Path.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\PriorityQueue.cs" Link="MarkovJuniorLib\Internal\PriorityQueue.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\Rule.cs" Link="MarkovJuniorLib\Internal\Rule.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\RuleNode.cs" Link="MarkovJuniorLib\Internal\RuleNode.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\Search.cs" Link="MarkovJuniorLib\Internal\Search.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\SymmetryHelper.cs" Link="MarkovJuniorLib\Internal\SymmetryHelper.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\TileModel.cs" Link="MarkovJuniorLib\Internal\TileModel.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\VoxHelper.cs" Link="MarkovJuniorLib\Internal\VoxHelper.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\WaveFunctionCollapse.cs" Link="MarkovJuniorLib\Internal\WaveFunctionCollapse.cs" />
-    <Compile Include="..\MarkovJuniorLib\Internal\XMLHelper.cs" Link="MarkovJuniorLib\Internal\XMLHelper.cs" />
-    <Compile Include="..\MarkovJuniorLib\MarkovJuniorRunner.cs" Link="MarkovJuniorLib\MarkovJuniorRunner.cs" />
-    <Compile Include="..\MarkovJuniorLib\ModelColor.cs" Link="MarkovJuniorLib\ModelColor.cs" />
-    <Compile Include="..\MarkovJuniorLib\ModelConfig.cs" Link="MarkovJuniorLib\ModelConfig.cs" />
-    <Compile Include="..\MarkovJuniorLib\RunResult.cs" Link="MarkovJuniorLib\RunResult.cs" />
-    <Compile Include="..\MarkovJuniorLib\ToOverride\Debug.cs" Link="MarkovJuniorLib\ToOverride\Debug.cs" />
-    <Compile Include="..\MarkovJuniorLib\ToOverride\IDebugLogger.cs" Link="MarkovJuniorLib\ToOverride\IDebugLogger.cs" />
-    <Compile Include="..\MarkovJuniorLib\ToOverride\IMathf.cs" Link="MarkovJuniorLib\ToOverride\IMathf.cs" />
-    <Compile Include="..\MarkovJuniorLib\ToOverride\IRandom.cs" Link="MarkovJuniorLib\ToOverride\IRandom.cs" />
-    <Compile Include="..\MarkovJuniorLib\ToOverride\ITexture2D.cs" Link="MarkovJuniorLib\ToOverride\ITexture2D.cs" />
-    <Compile Include="..\MarkovJuniorLib\ToOverride\ITextureHelper.cs" Link="MarkovJuniorLib\ToOverride\ITextureHelper.cs" />
-    <Compile Include="..\MarkovJuniorLib\ToOverride\Mathf.cs" Link="MarkovJuniorLib\ToOverride\Mathf.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="GodotSharp" Version="4.1.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="MarkovJuniorLib\Internal\" />
-    <Folder Include="MarkovJuniorLib\ToOverride\" />
     <Folder Include="Properties\PublishProfiles\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\MarkovJuniorLib\*.cs">
+      <Link>MarkovJuniorLib\%(FileName)</Link>
+    </Compile>
+    <Compile Include="..\MarkovJuniorLib\*\*.cs">
+      <Link>MarkovJuniorLib\%(RecursiveDir)%(FileName)</Link>
+    </Compile>
   </ItemGroup>
 
 </Project>

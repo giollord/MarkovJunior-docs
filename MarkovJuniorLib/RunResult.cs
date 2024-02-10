@@ -15,6 +15,10 @@ namespace MarkovJuniorLib
         /// Result .vox file contents
         /// </summary>
         public byte[] Vox { get; set; }
+        /// <summary>
+        /// Result 3d colors array
+        /// </summary>
+        public Color32[,,] Output3d { get; set; }
     }
 
     public abstract class RunResult<TTexture> where TTexture : class
@@ -27,5 +31,9 @@ namespace MarkovJuniorLib
         /// Result .vox file contents
         /// </summary>
         public byte[] Vox { get; set; }
+        /// <summary>
+        /// Result 3d colors array
+        /// </summary>
+        public Color32[,,] Output3d { get; set; }
     }
 }

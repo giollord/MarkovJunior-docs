@@ -6,7 +6,7 @@ This fork is based on fork [MarkovJunior-docs](https://github.com/kaya3/MarkovJu
 This fork uses PriorityQueue implementation from [.NET Platform](https://github.com/dotnet).
 
 ## What is it
-This is slightly modified version of [MarkovJunior](https://github.com/mxgmn/MarkovJunior) and [MarkovJunior-docs](https://github.com/kaya3/MarkovJunior-docs) repositories to provide MarkovJunior algorithm as API library for Unity. It can be built as DLL and put to Unity project or sources from `MarkovJuniorUnity` folder could be just dropped somewhere in Unity project.
+This is slightly modified version of [MarkovJunior](https://github.com/mxgmn/MarkovJunior) and [MarkovJunior-docs](https://github.com/kaya3/MarkovJunior-docs) repositories to provide MarkovJunior algorithm as API library for Unity. It can be built as DLL and put to Unity project, or as alternative folder `MarkovJuniorUnity` could be just dropped somewhere in Unity project. Library can also be used with Godot by building `MarkovJuniorLibGodot` and referencing it.
 
 It does not have any GUI or behaviors to interact with world and it will not place objects automatically.
 
@@ -20,6 +20,13 @@ There is ability to pass "tileset" and "folder" tags as well as ".vox" files, bu
 Nodes for Map Graph does not support tilesets, 3D models and some config parameters. And copy-pasting dowsn't copy XML.
 
 Probably some other bugs
+
+## Folder structure
+- `/MarkovJuniorLib` - base MarkovJunior library based on .Net Standard 2.0. It could be used as is without Unity or Godot
+- `/MarkovJuniorLibGodot` - MarkovJunior library adapted to be build for Godot
+- `/MarkovJuniorLibUnity` - MarkovJunior library adapted to be build for Unity
+- `/MarkovJuniorUnity` - MarkovJunior library adapted to be placed into `/Assets` folder of Unity project
+- `/Stuff` - MarkovJunior models taken from initial [MarkovJunior](https://github.com/mxgmn/MarkovJunior) repository that are supported.
 
 # How to:
 ## Install to Unity

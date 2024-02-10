@@ -1,7 +1,7 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,7 +12,13 @@
 
   <ItemGroup>
     <Reference Include="UnityEngine">
-      <HintPath>..\..\..\Program Files\Unity\Hub\Editor\2021.3.29f1\Editor\Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>c:\Program Files\Unity\Hub\Editor\2022.3.18f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>c:\Program Files\Unity\Hub\Editor\2022.3.18f1\Editor\Data\Managed\UnityEngine\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>c:\Program Files\Unity\Hub\Editor\2022.3.18f1\Editor\Data\Managed\UnityEngine\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 

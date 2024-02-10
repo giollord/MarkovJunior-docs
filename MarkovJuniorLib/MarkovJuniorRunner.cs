@@ -1,4 +1,5 @@
-﻿using MarkovJuniorLib.Internal;
+﻿using MarkovJuniorLib.InputConfig;
+using MarkovJuniorLib.Internal;
 using MarkovJuniorLib.ToOverride;
 using System;
 using System.Collections.Generic;
@@ -102,19 +103,27 @@ namespace MarkovJuniorLib
                 foreach ((byte[] result, char[] legend, int FX, int FY, int FZ) in interpreter.Run(seed, modelConfig.Steps, modelConfig.Gif, initialState))
                 {
                     int[] colors = legend.Select(ch => customPalette[ch]).ToArray();
+                    var runResult = new RunResult();
                     //string outputname = modelConfig.Gif ? $"output/{interpreter.counter}" : $"output/{modelConfig.Name}_{seed}";
                     if (FZ == 1 || modelConfig.Iso)
                     {
                         var (bitmap, WIDTH, HEIGHT) = Graphics.Render(result, FX, FY, FZ, colors, modelConfig.PixelSize, modelConfig.Gui);
                         if (modelConfig.Gui > 0) gui.Draw(modelConfig.Name, interpreter.root, interpreter.current, bitmap, WIDTH, HEIGHT, customPalette);
                         var tex = Graphics.SaveBitmap(textureHelper, bitmap, WIDTH, HEIGHT);
-                        yield return new RunResult { Texture = tex };
+                        runResult.Texture = tex;
                     }
-                    else
+                    if (modelConfig.Output3dVox)
                     {
                         var vox = VoxHelper.SaveVox(result, (byte)FX, (byte)FY, (byte)FZ, colors, null);
-                        yield return new RunResult { Vox = vox };
+                        runResult.Vox = vox;
                     }
+                    if (modelConfig.Output3dColors)
+                    {
+                        var out3dColors = VoxHelper.SaveColorsArray(result, FX, FY, FZ, colors);
+                        runResult.Output3d = out3dColors;
+                    }
+
+                    yield return runResult;
                 }
             }
         }

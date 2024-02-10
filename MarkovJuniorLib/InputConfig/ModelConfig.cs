@@ -1,8 +1,9 @@
-﻿using MarkovJuniorLib.ToOverride;
+﻿using MarkovJuniorLib.Internal;
+using MarkovJuniorLib.ToOverride;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace MarkovJuniorLib
+namespace MarkovJuniorLib.InputConfig
 {
     /// <summary>
     /// Configuration to run model
@@ -46,6 +47,14 @@ namespace MarkovJuniorLib
         /// </summary>
         public bool Iso = false;
         /// <summary>
+        /// If set to true, then output will be encoded as .vox file
+        /// </summary>
+        public bool Output3dVox = false;
+        /// <summary>
+        /// If set to true, then output will be encoded as Color32[x,y,z] array
+        /// </summary>
+        public bool Output3dColors = false;
+        /// <summary>
         /// Maximum amount of generator steps. Default is 50000
         /// </summary>
         public int Steps = 50000;
@@ -65,6 +74,7 @@ namespace MarkovJuniorLib
         /// Optional initial texture provided to generator. Must contain only default and custom defined colors. Default is null
         /// </summary>
         internal abstract ITexture2D InitialTextureInternal { get; }
+        internal abstract Color32[,,] InitialGridInternal { get; }
         /// <summary>
         /// Samples to use with "sample", "fin", "fout" and "file" attributes. Key is sample name, value is texture that must contain only default and custom defined colors. Default is empty dictionary
         /// </summary>
@@ -77,11 +87,13 @@ namespace MarkovJuniorLib
         /// Contents of .vox files to use with "sample", "fin", "fout" and "file" attributes. Key is resource name, value is .vox file. Default is empty dictionary
         /// </summary>
         public Dictionary<string, byte[]> Resources = new();
+        public Dictionary<string, Resource> Res22 = new();
     }
 
     public abstract class ModelConfig<TTexture> : ModelConfig where TTexture : class
     {
         private ITexture2D _initialTexture;
+        private Color32[,,] _initialGrid;
         private Dictionary<string, ITexture2D> _samples;
 
         /// <summary>
@@ -95,13 +107,14 @@ namespace MarkovJuniorLib
 
         public void ResetCache()
         {
-            _initialTexture = null;
+            _initialGrid = null;
             _samples = null;
         }
 
         protected abstract ITexture2D ConvertTexture(TTexture tex);
 
         internal override ITexture2D InitialTextureInternal => _initialTexture ??= ConvertTexture(InitialTexture);
+        internal override Color32[,,] InitialGridInternal => _initialGrid ??= Helper.TextureToColor32Array(ConvertTexture(InitialTexture));
         internal override Dictionary<string, ITexture2D> SamplesInternal => _samples ??= Samples.ToDictionary(x => x.Key, x => ConvertTexture(x.Value));
     }
 }

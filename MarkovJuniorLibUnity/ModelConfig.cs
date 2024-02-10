@@ -1,9 +1,10 @@
 ﻿using System.Linq;
+using MarkovJuniorLib.InputConfig;
 using UnityEngine;
 
 namespace MarkovJuniorLibUnity
 {
-    public class ModelConfig : MarkovJuniorLib.ModelConfig<Texture2D>
+    public class ModelConfig : ModelConfig<Texture2D>
     {
         protected override MarkovJuniorLib.ToOverride.ITexture2D ConvertTexture(Texture2D tex) => tex == null ? null : new UnityTexture2D(tex);
     }

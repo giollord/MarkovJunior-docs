@@ -1,6 +1,7 @@
 ﻿// Copyright (C) 2022 Maxim Gumin, The MIT License (MIT)
 
 using System.Xml.Linq;
+using MarkovJuniorLib.InputConfig;
 
 namespace MarkovJuniorLib.Internal
 {
